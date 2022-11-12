@@ -1,18 +1,17 @@
 package modelo;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 public class Alquiler {
 	private int idAlquiler;
+	private String nombre;
 	private double precio;
-	private List<LocalDateTime> diasYhorarios;
+	private boolean alquilado;
+	private DiaHorario diaYhorarios;
 
 	public Alquiler(int idAlquiler, double precio) {
-		setIdAlquiler(idAlquiler);
-		setPrecio(precio);
+		this.setIdAlquiler(idAlquiler);
+		this.setPrecio(precio);
 	}
 
 	public int getIdAlquiler() {
