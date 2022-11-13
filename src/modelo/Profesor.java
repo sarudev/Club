@@ -6,10 +6,11 @@ public class Profesor extends Persona {
   private int idCarnetProfesor;
   private double sueldo;
 
-  public Profesor(String nombre, String apellido, int dni, int edad, int idCarnetProfesor, double sueldo) {
+  public Profesor(String nombre, String apellido, int dni, int edad, int idCarnetProfesor, double sueldo)
+      throws Exception {
     super(nombre, apellido, dni, edad);
-    setIdCarnetProfesor(idCarnetProfesor);
-    setSueldo(sueldo);
+    this.setIdCarnetProfesor(idCarnetProfesor);
+    this.setSueldo(sueldo);
   }
 
   public int getIdCarnetProfesor() {

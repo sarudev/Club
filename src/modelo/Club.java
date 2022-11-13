@@ -30,8 +30,9 @@ public class Club {
   }
 
   public void setNombre(String nombre) throws Exception {
-    if (nombre.contains("=") || nombre.contains(",") || nombre.contains("{") || nombre.contains("}")
-        || nombre.contains("[") || nombre.contains("]"))
+    if (nombre.contains("=") || nombre.contains(",") || nombre.contains(".") || nombre.contains("{")
+        || nombre.contains("}")
+        || nombre.contains("[") || nombre.contains("]") || nombre.contains("\""))
       throw new Exception("El nombre no puede contener los siguientes caracteres: `={}[]`");
     this.nombre = nombre;
   }
@@ -49,8 +50,9 @@ public class Club {
   }
 
   public void setDireccion(String direccion) throws Exception {
-    if (direccion.contains("=") || direccion.contains(",") || direccion.contains("{") || direccion.contains("}")
-        || direccion.contains("[") || direccion.contains("]"))
+    if (direccion.contains("=") || direccion.contains(",") || direccion.contains(".") || direccion.contains("{")
+        || direccion.contains("}")
+        || direccion.contains("[") || direccion.contains("]") || direccion.contains("\""))
       throw new Exception("La direccion no puede contener los siguientes caracteres: `={}[]`");
     this.direccion = direccion;
   }
@@ -71,7 +73,7 @@ public class Club {
     return this.lstAlquileres;
   }
 
-  public Profesor agregarProfesor(String nombre, String apellido, int dni, int edad, double sueldo) {
+  public Profesor agregarProfesor(String nombre, String apellido, int dni, int edad, double sueldo) throws Exception {
     int id = this.lstProfesores.size();
 
     Profesor prof = new Profesor(nombre, apellido, dni, edad, id, sueldo);
@@ -119,7 +121,8 @@ public class Club {
     return prof;
   }
 
-  public Socio agregarSocio(String nombre, String apellido, int dni, int edad, int idCarnetSocio, double cuota) {
+  public Socio agregarSocio(String nombre, String apellido, int dni, int edad, int idCarnetSocio, double cuota)
+      throws Exception {
     int id = this.lstSocios.size();
 
     Socio soc = new Socio(nombre, apellido, dni, edad, id, cuota);
@@ -278,9 +281,9 @@ public class Club {
 
   public Map<String, Object> toHashMap() {
     Map<String, Object> map = new HashMap<String, Object>();
-    map.put("nombre", this.nombre);
+    map.put("nombre", "\"" + this.nombre + "\"");
     map.put("capacidad", this.capacidad);
-    map.put("direccion", this.direccion);
+    map.put("direccion", "\"" + this.direccion + "\"");
     map.put("lstProfesores", this.lstProfesores.stream().map((i) -> i.toHashMap()).collect(Collectors.toList()));
     map.put("lstSocios", this.lstSocios.stream().map((i) -> i.toHashMap()).collect(Collectors.toList()));
     map.put("lstActividades", this.lstActividades.stream().map((i) -> i.toHashMap()).collect(Collectors.toList()));

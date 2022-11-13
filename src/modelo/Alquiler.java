@@ -10,7 +10,7 @@ public class Alquiler {
   private boolean alquilado;
   private DiaHorario diaYhorario;
 
-  public Alquiler(String nombre, int idAlquiler, double precio) {
+  public Alquiler(String nombre, int idAlquiler, double precio) throws Exception {
     this.setIdAlquiler(idAlquiler);
     this.setNombre(nombre);
     this.setPrecio(precio);
@@ -28,7 +28,11 @@ public class Alquiler {
     return nombre;
   }
 
-  public void setNombre(String nombre) {
+  public void setNombre(String nombre) throws Exception {
+    if (nombre.contains("=") || nombre.contains(",") || nombre.contains(".") || nombre.contains("{")
+        || nombre.contains("}")
+        || nombre.contains("[") || nombre.contains("]") || nombre.contains("\""))
+      throw new Exception("El nombre no puede contener los siguientes caracteres: `={}[]`");
     this.nombre = nombre;
   }
 
@@ -59,7 +63,7 @@ public class Alquiler {
   public Map<String, Object> toHashMap() {
     Map<String, Object> map = new HashMap<String, Object>();
     map.put("idAlquiler", this.idAlquiler);
-    map.put("nombre", this.nombre);
+    map.put("nombre", "\"" + this.nombre + "\"");
     map.put("precio", this.precio);
     map.put("alquilado", this.alquilado);
     map.put("diaYhorarios", this.diaYhorario.toHashMap());

@@ -9,18 +9,22 @@ public abstract class Persona {
   protected int dni;
   protected int edad;
 
-  public Persona(String nombre, String apellido, int dni, int edad) {
-    setNombre(nombre);
-    setApellido(apellido);
-    setDni(dni);
-    setEdad(edad);
+  public Persona(String nombre, String apellido, int dni, int edad) throws Exception {
+    this.setNombre(nombre);
+    this.setApellido(apellido);
+    this.setDni(dni);
+    this.setEdad(edad);
   }
 
   public String getNombre() {
     return nombre;
   }
 
-  public void setNombre(String nombre) {
+  public void setNombre(String nombre) throws Exception {
+    if (nombre.contains("=") || nombre.contains(",") || nombre.contains(".") || nombre.contains("{")
+        || nombre.contains("}")
+        || nombre.contains("[") || nombre.contains("]") || nombre.contains("\""))
+      throw new Exception("El nombre no puede contener los siguientes caracteres: `={}[]`");
     this.nombre = nombre;
   }
 
@@ -28,7 +32,11 @@ public abstract class Persona {
     return apellido;
   }
 
-  public void setApellido(String apellido) {
+  public void setApellido(String apellido) throws Exception {
+    if (apellido.contains("=") || apellido.contains(",") || apellido.contains(".") || apellido.contains("{")
+        || apellido.contains("}")
+        || apellido.contains("[") || apellido.contains("]") || apellido.contains("\""))
+      throw new Exception("El nombre no puede contener los siguientes caracteres: `={}[]`");
     this.apellido = apellido;
   }
 
@@ -50,8 +58,8 @@ public abstract class Persona {
 
   public Map<String, Object> toHashMap() {
     Map<String, Object> map = new HashMap<String, Object>();
-    map.put("nombre", this.nombre);
-    map.put("apellido", this.apellido);
+    map.put("nombre", "\"" + this.nombre + "\"");
+    map.put("apellido", "\"" + this.apellido + "\"");
     map.put("dni", this.dni);
     map.put("edad", this.edad);
     return map;

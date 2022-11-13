@@ -36,8 +36,9 @@ public class Actividad {
   }
 
   public void setNombre(String nombre) throws Exception {
-    if (nombre.contains("=") || nombre.contains(",") || nombre.contains("{") || nombre.contains("}")
-        || nombre.contains("[") || nombre.contains("]"))
+    if (nombre.contains("=") || nombre.contains(",") || nombre.contains(".") || nombre.contains("{")
+        || nombre.contains("}")
+        || nombre.contains("[") || nombre.contains("]") || nombre.contains("\""))
       throw new Exception("El nombre no puede contener los siguientes caracteres: `={}[]`");
     this.nombre = nombre;
   }
@@ -123,7 +124,7 @@ public class Actividad {
   public Map<String, Object> toHashMap() {
     Map<String, Object> map = new HashMap<String, Object>();
     map.put("idActividad", this.idActividad);
-    map.put("nombre", this.nombre);
+    map.put("nombre", "\"" + this.nombre + "\"");
     map.put("cupos", this.cupos);
     map.put("diasYhorarios", this.diasYhorarios.stream().map((i) -> i.toHashMap()).collect(Collectors.toList()));
     map.put("lstProfesores", this.lstProfesores.stream().map((i) -> i.toHashMap()).collect(Collectors.toList()));

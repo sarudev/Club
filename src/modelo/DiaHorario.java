@@ -15,6 +15,9 @@ public class DiaHorario {
   }
 
   private void setDia(String dia) throws Exception {
+    if (dia.contains("=") || dia.contains(",") || dia.contains(".") || dia.contains("{") || dia.contains("}")
+        || dia.contains("[") || dia.contains("]") || dia.contains("\""))
+      throw new Exception("El dia no puede contener los siguientes caracteres: `={}[]`");
     if (!dia.equalsIgnoreCase("lunes") &&
         !dia.equalsIgnoreCase("martes") &&
         !dia.equalsIgnoreCase("miercoles") &&
@@ -55,7 +58,7 @@ public class DiaHorario {
 
   public Map<String, Object> toHashMap() {
     Map<String, Object> map = new HashMap<String, Object>();
-    map.put("dia", this.dia);
+    map.put("dia", "\"" + this.dia + "\"");
     map.put("hora", this.hora);
     map.put("duracion", this.duracion);
     return map;

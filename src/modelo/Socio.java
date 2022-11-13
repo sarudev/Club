@@ -6,10 +6,10 @@ public class Socio extends Persona {
 	private int idCarnetSocio;
 	private double cuota;
 
-	public Socio(String nombre, String apellido, int dni, int edad, int idCarnetSocio, double cuota) {
+	public Socio(String nombre, String apellido, int dni, int edad, int idCarnetSocio, double cuota) throws Exception {
 		super(nombre, apellido, dni, edad);
-		setIdCarnetSocio(idCarnetSocio);
-		setCuota(cuota);
+		this.setIdCarnetSocio(idCarnetSocio);
+		this.setCuota(cuota);
 	}
 
 	public int getIdCarnetSocio() {
