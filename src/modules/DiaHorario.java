@@ -30,10 +30,14 @@ public class DiaHorario {
   }
 
   private void setHora(int hora) throws Exception {
+    if (hora < 0)
+      throw new Exception("hora can't be negative.");
     this.hora = hora;
   }
 
   public void setDuracion(int duracion) throws Exception {
+    if (duracion < 0)
+      throw new Exception("duracion can't be negative.");
     this.duracion = duracion;
   }
 

@@ -66,7 +66,7 @@ public class Alquiler {
     map.put("nombre", "\"" + this.nombre + "\"");
     map.put("precio", this.precio);
     map.put("alquilado", this.alquilado);
-    map.put("diaYhorarios", this.diaYhorario.toHashMap());
+    map.put("diaYhorario", this.diaYhorario == null ? null : this.diaYhorario.toHashMap());
     return map;
   }
 }

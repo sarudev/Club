@@ -30,8 +30,8 @@ public class Socio extends Persona {
 
 	public Map<String, Object> toHashMap() {
 		Map<String, Object> map = super.toHashMap();
-		map.put("idCarnetProfesor", this.idCarnetSocio);
-		map.put("sueldo", this.cuota);
+		map.put("idCarnetSocio", this.idCarnetSocio);
+		map.put("cuota", this.cuota);
 		return map;
 	}
 }
