@@ -1,4 +1,4 @@
-package menu;
+package helpers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,7 +113,11 @@ public class Menu {
         if (value >= this.start && value < this.options.size() + this.start) {
           ok = true;
           optionValue = value;
+        } else {
+          System.out.println("[INVALID OPTION]");
         }
+      } else {
+        System.out.println("[INVALID OPTION]");
       }
     }
 

@@ -1,4 +1,4 @@
-package modelo;
+package modules;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,7 +67,9 @@ public class Actividad {
     this.diasYhorarios.add(dYh);
   }
 
-  public void agregarProfesor(Profesor prof) {
+  public void agregarProfesor(Profesor prof) throws Exception {
+    if (this.traerProfesor(prof.getIdCarnetProfesor()) != null)
+      throw new Exception("Ese profe ya está en la actividad.");
     this.lstProfesores.add(prof);
   }
 
@@ -94,8 +96,10 @@ public class Actividad {
   }
 
   public void agregarSocio(Socio socio) throws Exception {
-    if (this.lstProfesores.size() == this.cupos)
+    if (this.lstSocios.size() == this.cupos)
       throw new Exception("Se alcanzo el limite de cupos.");
+    if (this.traerSocio(socio.getIdCarnetSocio()) != null)
+      throw new Exception("Ese socio ya está en la actividad.");
     this.lstSocios.add(socio);
   }
 

@@ -1,4 +1,4 @@
-package archivos;
+package helpers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +28,11 @@ public class JSONparser {
             System.out.println(" ".repeat(newIndent) + "],");
           }
         } else if (value instanceof String) {
-          System.out.println(" ".repeat(newIndent) + key + ": \"" + value + "\",");
+          String val = (String) value;
+          if (val.startsWith("\""))
+            System.out.println(" ".repeat(newIndent) + key + ": " + value + ",");
+          else
+            System.out.println(" ".repeat(newIndent) + key + ": \"" + value + "\",");
         } else {
           System.out.println(" ".repeat(newIndent) + key + ": " + value + ",");
         }

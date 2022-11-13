@@ -1,4 +1,4 @@
-package modelo;
+package modules;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,16 +8,14 @@ import java.util.stream.Collectors;
 
 public class Club {
   private String nombre;
-  private int capacidad;
   private String direccion;
   private List<Profesor> lstProfesores;
   private List<Socio> lstSocios;
   private List<Actividad> lstActividades;
   private List<Alquiler> lstAlquileres;
 
-  public Club(String nombre, int capacidad, String direccion) throws Exception {
+  public Club(String nombre, String direccion) throws Exception {
     this.setNombre(nombre);
-    this.setCapacidad(capacidad);
     this.setDireccion(direccion);
     this.lstProfesores = new ArrayList<Profesor>();
     this.lstSocios = new ArrayList<Socio>();
@@ -35,14 +33,6 @@ public class Club {
         || nombre.contains("[") || nombre.contains("]") || nombre.contains("\""))
       throw new Exception("El nombre no puede contener los siguientes caracteres: `={}[]`");
     this.nombre = nombre;
-  }
-
-  public int getCapacidad() {
-    return capacidad;
-  }
-
-  public void setCapacidad(int capacidad) {
-    this.capacidad = capacidad;
   }
 
   public String getDireccion() {
@@ -121,7 +111,7 @@ public class Club {
     return prof;
   }
 
-  public Socio agregarSocio(String nombre, String apellido, int dni, int edad, int idCarnetSocio, double cuota)
+  public Socio agregarSocio(String nombre, String apellido, int dni, int edad, double cuota)
       throws Exception {
     int id = this.lstSocios.size();
 
@@ -282,7 +272,6 @@ public class Club {
   public Map<String, Object> toHashMap() {
     Map<String, Object> map = new HashMap<String, Object>();
     map.put("nombre", "\"" + this.nombre + "\"");
-    map.put("capacidad", this.capacidad);
     map.put("direccion", "\"" + this.direccion + "\"");
     map.put("lstProfesores", this.lstProfesores.stream().map((i) -> i.toHashMap()).collect(Collectors.toList()));
     map.put("lstSocios", this.lstSocios.stream().map((i) -> i.toHashMap()).collect(Collectors.toList()));
