@@ -1,13 +1,7 @@
 package tests;
 
 import modelo.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import archivos.JSONparser;
+import archivos.Files;
 import menu.Menu;
 
 public class Test {
@@ -23,10 +17,8 @@ public class Test {
     club.agregarDiaYhorario(alq1, "viernes", 16, 2);
     Alquiler alq2 = club.agregarAlquiler("Salon de eventos", 20_000);
     club.agregarDiaYhorario(alq2, "viernes", 18, 2);
-    String str = club.toHashMap().toString();
-    // String str = "{id=12, data=[]}";
-    System.out.println(str);
-    Map<String, Object> map = JSONparser.stringToHashMap(str);
-    JSONparser.print(map, 0);
+
+    Files.write("data", club.toHashMap());
+    System.out.println(Files.read("data"));
   }
 }
