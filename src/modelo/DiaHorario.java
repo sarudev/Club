@@ -1,5 +1,8 @@
 package modelo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DiaHorario {
   private String dia;
   private int hora;
@@ -50,4 +53,11 @@ public class DiaHorario {
     return sameDay && isBetween;
   }
 
+  public Map<String, Object> toHashMap() {
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("dia", this.dia);
+    map.put("hora", this.hora);
+    map.put("duracion", this.duracion);
+    return map;
+  }
 }

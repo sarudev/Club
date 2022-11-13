@@ -1,5 +1,7 @@
 package modelo;
 
+import java.util.Map;
+
 public class Socio extends Persona {
 	private int idCarnetSocio;
 	private double cuota;
@@ -26,4 +28,10 @@ public class Socio extends Persona {
 		this.cuota = cuota;
 	}
 
+	public Map<String, Object> toHashMap() {
+		Map<String, Object> map = super.toHashMap();
+		map.put("idCarnetProfesor", this.idCarnetSocio);
+		map.put("sueldo", this.cuota);
+		return map;
+	}
 }
