@@ -17,7 +17,8 @@ public class Test {
       club = recrearClub();
     } catch (Exception e) {
       e.printStackTrace();
-      System.out.println("Puede recrear el fichero con la opcion \"Recrear Fichero\" en \"Administracion\".");
+      System.out.println(
+          "Puede recrear el fichero con datos por defecto con la opcion \"Recrear Fichero\" en \"Administracion\".");
     }
     if (club == null) {
       // crear club con input
