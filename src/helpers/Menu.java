@@ -1,41 +1,43 @@
 package helpers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Menu {
   private String title;
   private String description;
-  private List<String> options;
+  private List<Map<String, Lambda>> options;
   private int start;
 
   public Menu(String title) {
     this.title = title;
     this.description = "";
     this.start = 1;
-    this.options = new ArrayList<String>();
+    this.options = new ArrayList<Map<String, Lambda>>();
   }
 
   public Menu(String title, String description) {
     this.title = title;
     this.description = description;
     this.start = 1;
-    this.options = new ArrayList<String>();
+    this.options = new ArrayList<Map<String, Lambda>>();
   }
 
   public Menu(String title, String description, int start) throws Exception {
     this.title = title;
     this.description = description;
     this.start = start;
-    this.options = new ArrayList<String>();
+    this.options = new ArrayList<Map<String, Lambda>>();
   }
 
   public Menu(String title, int start) throws Exception {
     this.title = title;
     this.description = "";
     this.start = start;
-    this.options = new ArrayList<String>();
+    this.options = new ArrayList<Map<String, Lambda>>();
   }
 
   public String getTitle() {
@@ -54,12 +56,14 @@ public class Menu {
     this.description = description;
   }
 
-  public List<String> getOptions() {
+  public List<Map<String, Lambda>> getOptions() {
     return this.options;
   }
 
-  public void addOption(String option) throws Exception {
-    this.options.add(option);
+  public void addOption(String option, Lambda lambda) throws Exception {
+    Map<String, Lambda> map = new HashMap<String, Lambda>();
+    map.put(option, lambda);
+    this.options.add(map);
   }
 
   public void removeOption(String option) throws Exception {
@@ -71,14 +75,32 @@ public class Menu {
     this.options.remove(idx);
   }
 
-  public void moveOption(String option, int toIndex) throws Exception {
-    int idx = this.getOptionIndex(option);
+  public void moveOption(String optionName, int toIndex) throws Exception {
+    int idx = this.getOptionIndex(optionName);
 
-    if (idx < 0)
+    if (idx < 0 || idx >= this.options.size() || toIndex < 0 || toIndex >= this.options.size())
+      throw new Exception("Option does not exists.");
+
+    Map<String, Lambda> option = this.getOption(optionName);
+
+    if (option == null)
       throw new Exception("Option does not exists.");
 
     this.options.remove(idx);
     this.options.add(toIndex, option);
+  }
+
+  public Map<String, Lambda> getOption(String name) {
+    Map<String, Lambda> op = null;
+    int i = 0;
+
+    while (i < this.options.size() && op == null) {
+      if (this.options.get(i).containsKey(name))
+        op = this.options.get(i);
+      i++;
+    }
+
+    return op;
   }
 
   public void print(int space) throws Exception {
@@ -91,12 +113,12 @@ public class Menu {
     System.out.println();
 
     for (int i = 0; i < this.options.size(); i++) {
-      String op = i + this.start + ". " + this.options.get(i);
+      String op = this.start + i + ". " + this.options.get(i).keySet().toArray()[0];
       System.out.println(op);
     }
   }
 
-  public int selectOption() throws Exception {
+  public void selectOption(int space) throws Exception {
     Scanner sc = new Scanner(System.in);
     boolean ok = false;
     int optionValue = 0;
@@ -108,22 +130,29 @@ public class Menu {
       if (option.length() == 1) {
         char cOption = option.charAt(0);
         int value = 0;
-        if (Character.isDigit(cOption)) {
+        if (Character.isDigit(cOption))
           value = Integer.parseInt(Character.toString(cOption));
-        }
         if (value >= this.start && value < this.options.size() + this.start) {
           ok = true;
           optionValue = value;
-        } else {
+        } else
           System.out.println("[INVALID OPTION]");
-        }
       } else {
         System.out.println("[INVALID OPTION]");
       }
     }
 
     sc.close();
-    return optionValue;
+
+    final int realOptionValue = optionValue - this.start;
+
+    Map<String, Lambda> map = this.options.get(realOptionValue);
+    Lambda lambda = map.get(map.keySet().toArray()[0]);
+
+    for (int i = 0; i < space; i++)
+      System.out.println("");
+
+    lambda.exec();
   }
 
   private int getOptionIndex(String option) {
@@ -139,6 +168,6 @@ public class Menu {
       idx++;
     }
 
-    return idx;
+    return idx == 0 ? -1 : idx;
   }
 }

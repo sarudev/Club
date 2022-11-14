@@ -269,6 +269,150 @@ public class Club {
     return dYh;
   }
 
+  public static Club recrearClub(Map<String, Object> map) throws Exception {
+    if (map.keySet().size() < 6 ||
+        map.get("nombre") == null || !(map.get("nombre") instanceof String) ||
+        map.get("direccion") == null || !(map.get("direccion") instanceof String) ||
+        map.get("lstProfesores") == null || !(map.get("lstProfesores") instanceof List) ||
+        map.get("lstSocios") == null || !(map.get("lstSocios") instanceof List) ||
+        map.get("lstActividades") == null || !(map.get("lstActividades") instanceof List) ||
+        map.get("lstAlquileres") == null || !(map.get("lstAlquileres") instanceof List))
+      throw new Exception("Corrupted data.");
+
+    Club club = new Club((String) map.get("nombre"), (String) map.get("direccion"));
+
+    ((List<Map<String, Object>>) map.get("lstProfesores")).forEach(prof -> {
+      try {
+        if (prof.keySet().size() < 6 ||
+            prof.get("nombre") == null || !(prof.get("nombre") instanceof String) ||
+            prof.get("apellido") == null || !(prof.get("apellido") instanceof String) ||
+            prof.get("edad") == null || !(prof.get("edad") instanceof Integer) ||
+            prof.get("dni") == null || !(prof.get("dni") instanceof Integer) ||
+            prof.get("idCarnetProfesor") == null || !(prof.get("idCarnetProfesor") instanceof Integer) ||
+            prof.get("sueldo") == null || !(prof.get("sueldo") instanceof Double))
+          throw new Exception("Corrupted data.");
+
+        club.agregarProfesor((String) prof.get("nombre"), (String) prof.get("apellido"), (int) prof.get("dni"),
+            (int) prof.get("edad"), (double) prof.get("sueldo"));
+      } catch (Exception e) {
+        throw new RuntimeException("Corrupted data.");
+      }
+    });
+
+    ((List<Map<String, Object>>) map.get("lstSocios")).forEach(soc -> {
+      try {
+        if (soc.keySet().size() < 6 ||
+            soc.get("nombre") == null || !(soc.get("nombre") instanceof String) ||
+            soc.get("apellido") == null || !(soc.get("apellido") instanceof String) ||
+            soc.get("edad") == null || !(soc.get("edad") instanceof Integer) ||
+            soc.get("dni") == null || !(soc.get("dni") instanceof Integer) ||
+            soc.get("idCarnetSocio") == null || !(soc.get("idCarnetSocio") instanceof Integer) ||
+            soc.get("cuota") == null || !(soc.get("cuota") instanceof Double))
+          throw new Exception("Corrupted data.");
+
+        club.agregarSocio((String) soc.get("nombre"), (String) soc.get("apellido"), (int) soc.get("dni"),
+            (int) soc.get("edad"), (double) soc.get("cuota"));
+      } catch (Exception e) {
+        throw new RuntimeException("Corrupted data.");
+      }
+    });
+
+    ((List<Map<String, Object>>) map.get("lstActividades")).forEach(act -> {
+      try {
+        if (act.keySet().size() < 6 ||
+            act.get("idActividad") == null || !(act.get("idActividad") instanceof Integer) ||
+            act.get("nombre") == null || !(act.get("nombre") instanceof String) ||
+            act.get("cupos") == null || !(act.get("cupos") instanceof Integer) ||
+            act.get("lstProfesores") == null || !(act.get("lstProfesores") instanceof List) ||
+            act.get("lstSocios") == null || !(act.get("lstSocios") instanceof List) ||
+            act.get("diasYhorarios") == null || !(act.get("diasYhorarios") instanceof List))
+          throw new Exception("Corrupted data.");
+
+        Actividad act1 = club.agregarActividad((String) act.get("nombre"), (int) act.get("cupos"));
+        ((List<Map<String, Object>>) act.get("diasYhorarios")).forEach(dYh -> {
+          try {
+            if (dYh.keySet().size() < 3 ||
+                dYh.get("dia") == null || !(dYh.get("dia") instanceof String) ||
+                dYh.get("hora") == null || !(dYh.get("hora") instanceof Integer) ||
+                dYh.get("duracion") == null || !(dYh.get("duracion") instanceof Integer))
+              throw new Exception("Corrupted data.");
+
+            club.agregarDiaYhorario(act1, (String) dYh.get("dia"), (int) dYh.get("hora"), (int) dYh.get("duracion"));
+          } catch (Exception e) {
+            throw new RuntimeException("Corrupted data.");
+          }
+        });
+        ((List<Map<String, Object>>) act.get("lstProfesores")).forEach(prof -> {
+          try {
+            if (prof.keySet().size() < 6 ||
+                prof.get("nombre") == null || !(prof.get("nombre") instanceof String) ||
+                prof.get("apellido") == null || !(prof.get("apellido") instanceof String) ||
+                prof.get("edad") == null || !(prof.get("edad") instanceof Integer) ||
+                prof.get("dni") == null || !(prof.get("dni") instanceof Integer) ||
+                prof.get("idCarnetProfesor") == null || !(prof.get("idCarnetProfesor") instanceof Integer) ||
+                prof.get("sueldo") == null || !(prof.get("sueldo") instanceof Double))
+              throw new Exception("Corrupted data.");
+
+            Profesor profe = club.traerProfesor((int) prof.get("idCarnetProfesor"));
+            if (profe == null)
+              throw new Exception("Corrupted data.");
+            act1.agregarProfesor(profe);
+          } catch (Exception e) {
+            throw new RuntimeException("Corrupted data.");
+          }
+        });
+        ((List<Map<String, Object>>) act.get("lstSocios")).forEach(soc -> {
+          try {
+            if (soc.keySet().size() < 6 ||
+                soc.get("nombre") == null || !(soc.get("nombre") instanceof String) ||
+                soc.get("apellido") == null || !(soc.get("apellido") instanceof String) ||
+                soc.get("edad") == null || !(soc.get("edad") instanceof Integer) ||
+                soc.get("dni") == null || !(soc.get("dni") instanceof Integer) ||
+                soc.get("idCarnetSocio") == null || !(soc.get("idCarnetSocio") instanceof Integer) ||
+                soc.get("cuota") == null || !(soc.get("cuota") instanceof Double))
+              throw new Exception("Corrupted data.");
+
+            Socio socio = club.traerSocio((int) soc.get("idCarnetSocio"));
+            if (socio == null)
+              throw new Exception("Corrupted data.");
+            act1.agregarSocio(socio);
+          } catch (Exception e) {
+            throw new RuntimeException("Corrupted data.");
+          }
+        });
+      } catch (Exception e) {
+        throw new RuntimeException("Corrupted data.");
+      }
+    });
+
+    ((List<Map<String, Object>>) map.get("lstAlquileres")).forEach(alq -> {
+      try {
+        if (alq.keySet().size() < 5 ||
+            alq.get("idAlquiler") == null || !(alq.get("idAlquiler") instanceof Integer) ||
+            alq.get("nombre") == null || !(alq.get("nombre") instanceof String) ||
+            alq.get("precio") == null || !(alq.get("precio") instanceof Double) ||
+            alq.get("alquilado") == null || !(alq.get("alquilado") instanceof Boolean) ||
+            alq.get("diaYhorario") == null || !(alq.get("diaYhorario") instanceof Map))
+          throw new Exception("Corrupted data.");
+
+        Alquiler alq1 = club.agregarAlquiler((String) alq.get("nombre"), (double) alq.get("precio"));
+        alq1.setAlquilado((boolean) alq.get("alquilado"));
+
+        Map<String, Object> dYh = (Map<String, Object>) alq.get("diaYhorario");
+        if (dYh.keySet().size() < 3 ||
+            dYh.get("dia") == null || !(dYh.get("dia") instanceof String) ||
+            dYh.get("hora") == null || !(dYh.get("hora") instanceof Integer) ||
+            dYh.get("duracion") == null || !(dYh.get("duracion") instanceof Integer))
+          throw new Exception("Corrupted data.");
+        club.agregarDiaYhorario(alq1, (String) dYh.get("dia"), (int) dYh.get("hora"), (int) dYh.get("duracion"));
+      } catch (Exception e) {
+        throw new RuntimeException("Corrupted data.");
+      }
+    });
+
+    return club;
+  }
+
   public Map<String, Object> toHashMap() {
     Map<String, Object> map = new HashMap<String, Object>();
     map.put("nombre", "\"" + this.nombre + "\"");
