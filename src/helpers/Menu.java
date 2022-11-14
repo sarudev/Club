@@ -81,8 +81,8 @@ public class Menu {
     this.options.add(toIndex, option);
   }
 
-  public void print() throws Exception {
-    for (int i = 0; i < 50; i++)
+  public void print(int space) throws Exception {
+    for (int i = 0; i < space; i++)
       System.out.println("");
     System.out.println(title);
     if (this.description.length() > 0)
@@ -101,6 +101,7 @@ public class Menu {
     boolean ok = false;
     int optionValue = 0;
 
+    System.out.println("");
     while (!ok) {
       System.out.print("Opcion? > ");
       String option = sc.nextLine();

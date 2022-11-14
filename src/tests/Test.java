@@ -16,24 +16,22 @@ public class Test {
     try {
       club = recrearClub();
     } catch (Exception e) {
-      e.printStackTrace();
+      System.out.println("ERROR: " + e.getMessage());
       System.out.println(
           "Puede recrear el fichero con datos por defecto con la opcion \"Recrear Fichero\" en \"Administracion\".");
     }
     if (club == null) {
-      // crear club con input
+      club = new Club("ERROR", "ERROR");
     }
-    // recrearFichero();
-    System.out.println("ready");
-    // Menu menu = new Menu("Bienvenido al club " + /* club.getNombre() + */ ".");
-    // menu.addOption("Actividad 1");
-    // menu.addOption("Actividad 2");
-    // menu.addOption("Actividad 3");
-    // menu.addOption("Actividad 4");
-    // menu.print();
-    // int option = menu.selectOption();
-    // System.out.println(option);
-    // recrearFichero();
+    Menu menu = new Menu("Bienvenido al club " + club.getNombre() + ".");
+    menu.addOption("Inscribir socio.");
+    menu.addOption("Agregar socio a actividad.");
+    menu.addOption("Actividades.");
+    menu.addOption("Alquileres.");
+    menu.addOption("Administracion");
+    menu.print(3);
+    int option = menu.selectOption();
+    System.out.println(option);
   }
 
   private static void recrearFichero() throws Exception {
@@ -228,8 +226,6 @@ public class Test {
       }
     });
 
-    JSONparser.print(club.toHashMap(), 0);
-
-    return null;
+    return club;
   }
 }
