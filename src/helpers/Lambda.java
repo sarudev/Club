@@ -1,5 +1,5 @@
 package helpers;
 
 public interface Lambda {
-  public void exec();
+  public void exec() throws Exception;
 }

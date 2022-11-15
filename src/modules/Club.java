@@ -269,6 +269,7 @@ public class Club {
     return dYh;
   }
 
+  @SuppressWarnings("unchecked")
   public static Club recrearClub(Map<String, Object> map) throws Exception {
     if (map.keySet().size() < 6 ||
         map.get("nombre") == null || !(map.get("nombre") instanceof String) ||
