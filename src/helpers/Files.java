@@ -29,6 +29,58 @@ public class Files {
     return json;
   }
 
+  public static String scan(String text, Class<?> wantedType, String whyInvalid, LambdaStr lambda) {
+    Map<Class<?>, Predicate<String>> map = new HashMap<>();
+    map.put(Integer.TYPE, s -> {
+      try {
+        Integer.parseInt(s);
+        return true;
+      } catch (Exception e) {
+        return false;
+      }
+    });
+    boolean ok = false;
+    String str = "";
+
+    while (!ok) {
+      System.out.print(text);
+      str = Files.sc.nextLine();
+      if ((wantedType.equals(String.class) || map.get(wantedType).test(str)) && str.length() > 0 && lambda.exec(str))
+        ok = true;
+      else {
+        System.out.println("[INVALID ENTRY] Reason: " + whyInvalid);
+      }
+    }
+
+    return str;
+  }
+
+  public static String scan(String text, Class<?> wantedType, String whyInvalid) {
+    Map<Class<?>, Predicate<String>> map = new HashMap<>();
+    map.put(Integer.TYPE, s -> {
+      try {
+        Integer.parseInt(s);
+        return true;
+      } catch (Exception e) {
+        return false;
+      }
+    });
+    boolean ok = false;
+    String str = "";
+
+    while (!ok) {
+      System.out.print(text);
+      str = Files.sc.nextLine();
+      if ((wantedType.equals(String.class) || map.get(wantedType).test(str)) && str.length() > 0)
+        ok = true;
+      else {
+        System.out.println("[INVALID ENTRY] Reason: " + whyInvalid);
+      }
+    }
+
+    return str;
+  }
+
   public static String scan(String text, Class<?> wantedType) {
     Map<Class<?>, Predicate<String>> map = new HashMap<>();
     map.put(Integer.TYPE, s -> {

@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import helpers.Files;
+import helpers.JSONparser;
+
 public class Club {
   private String nombre;
   private String direccion;
@@ -64,6 +67,11 @@ public class Club {
   }
 
   public Profesor agregarProfesor(String nombre, String apellido, int dni, int edad, double sueldo) throws Exception {
+    Profesor repe = this.traerProfesor(dni);
+
+    if (repe != null)
+      throw new Exception("Ya existe un socio con ese dni.");
+
     int id = this.lstProfesores.size();
 
     Profesor prof = new Profesor(nombre, apellido, dni, edad, id, sueldo);
@@ -74,6 +82,19 @@ public class Club {
   }
 
   public Profesor traerProfesor(int id) {
+    int i = 0;
+    Profesor prof = null;
+
+    while (i < this.lstProfesores.size() && prof == null) {
+      if (this.lstProfesores.get(i).getDni() == id)
+        prof = this.lstProfesores.get(i);
+      i++;
+    }
+
+    return prof;
+  }
+
+  public Profesor traerProfesorId(int id) {
     int i = 0;
     Profesor prof = null;
 
@@ -113,6 +134,11 @@ public class Club {
 
   public Socio agregarSocio(String nombre, String apellido, int dni, int edad, double cuota)
       throws Exception {
+    Socio repe = this.traerSocio(dni);
+
+    if (repe != null)
+      throw new Exception("Ya existe un socio con ese dni.");
+
     int id = this.lstSocios.size();
 
     Socio soc = new Socio(nombre, apellido, dni, edad, id, cuota);
@@ -122,7 +148,20 @@ public class Club {
     return soc;
   }
 
-  public Socio traerSocio(int id) {
+  public Socio traerSocio(int dni) {
+    int i = 0;
+    Socio soc = null;
+
+    while (i < this.lstSocios.size() && soc == null) {
+      if (this.lstSocios.get(i).getDni() == dni)
+        soc = this.lstSocios.get(i);
+      i++;
+    }
+
+    return soc;
+  }
+
+  public Socio traerSocioId(int id) {
     int i = 0;
     Socio soc = null;
 
@@ -354,7 +393,7 @@ public class Club {
                 prof.get("sueldo") == null || !(prof.get("sueldo") instanceof Double))
               throw new Exception("Corrupted data.");
 
-            Profesor profe = club.traerProfesor((int) prof.get("idCarnetProfesor"));
+            Profesor profe = club.traerProfesorId((int) prof.get("idCarnetProfesor"));
             if (profe == null)
               throw new Exception("Corrupted data.");
             act1.agregarProfesor(profe);
@@ -373,7 +412,7 @@ public class Club {
                 soc.get("cuota") == null || !(soc.get("cuota") instanceof Double))
               throw new Exception("Corrupted data.");
 
-            Socio socio = club.traerSocio((int) soc.get("idCarnetSocio"));
+            Socio socio = club.traerSocioId((int) soc.get("idCarnetSocio"));
             if (socio == null)
               throw new Exception("Corrupted data.");
             act1.agregarSocio(socio);

@@ -2,7 +2,6 @@ package helpers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Menu {
   private String title;
@@ -58,13 +57,13 @@ public class Menu {
     return this.options;
   }
 
-  public Option addOption(String option, boolean blocked, String reason, Lambda lambda) throws Exception {
+  public Option addOption(String option, boolean blocked, String reason, LambdaOne lambda) throws Exception {
     Option op = new Option(option, blocked, reason, lambda);
     this.options.add(op);
     return op;
   }
 
-  public Option addOption(String option, Lambda lambda) throws Exception {
+  public Option addOption(String option, LambdaOne lambda) throws Exception {
     Option op = new Option(option, false, "", lambda);
     this.options.add(op);
     return op;
@@ -108,6 +107,7 @@ public class Menu {
   public void printTitle(int emptyLinesTop) {
     for (int i = 0; i < emptyLinesTop; i++)
       System.out.println("");
+    System.out.println("=".repeat(50));
     System.out.print(title);
     if (this.description.length() > 0)
       System.out.println("\n" + description);
@@ -123,6 +123,7 @@ public class Menu {
       Option op = this.options.get(i);
       System.out.println(this.start + i + ". " + (op.isBlocked() ? "[BLOCKED] " : "") + op.getName());
     }
+    System.out.println("=".repeat(50));
   }
 
   public void selectOption(int emptyLinesBottom) throws Exception {
@@ -151,7 +152,7 @@ public class Menu {
     }
 
     Option op = this.options.get(optionValue - this.start);
-    Lambda lambda = op.getLambda();
+    LambdaOne lambda = op.getLambda();
 
     for (int i = 0; i < emptyLinesBottom; i++)
       System.out.println("");
@@ -178,11 +179,11 @@ public class Menu {
 
 class Option {
   private String name;
-  private Lambda lambda;
+  private LambdaOne lambda;
   private boolean blocked;
   private String reason;
 
-  public Option(String name, boolean blocked, String reason, Lambda lambda) {
+  public Option(String name, boolean blocked, String reason, LambdaOne lambda) {
     this.name = name;
     this.lambda = lambda;
     this.blocked = blocked;
@@ -193,7 +194,7 @@ class Option {
     return this.name;
   }
 
-  public Lambda getLambda() {
+  public LambdaOne getLambda() {
     return this.lambda;
   }
 
@@ -217,7 +218,7 @@ class Option {
 
   @Override
   public String toString() {
-    return "Option [name=" + name + ", lambda=" + lambda + ", blocked=" + blocked + ", reason=" + reason + "]";
+    return "Option [name=" + name + ", LambdaOne=" + lambda + ", blocked=" + blocked + ", reason=" + reason + "]";
   }
 
 }

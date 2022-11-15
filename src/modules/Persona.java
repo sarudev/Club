@@ -44,7 +44,9 @@ public abstract class Persona {
     return dni;
   }
 
-  public void setDni(int dni) {
+  public void setDni(int dni) throws Exception {
+    if (String.valueOf(dni).length() != 8)
+      throw new Exception("Invalid DNI");
     this.dni = dni;
   }
 
@@ -52,7 +54,9 @@ public abstract class Persona {
     return edad;
   }
 
-  public void setEdad(int edad) {
+  public void setEdad(int edad) throws Exception {
+    if (dni <= 0)
+      throw new Exception("Invalid edad");
     this.edad = edad;
   }
 
