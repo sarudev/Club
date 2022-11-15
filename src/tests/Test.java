@@ -1,7 +1,6 @@
 package tests;
 
 import java.util.Map;
-import java.util.Scanner;
 
 import helpers.Files;
 import helpers.JSONparser;
@@ -11,23 +10,8 @@ import modules.Club;
 public class Test {
   public static void main(String[] args) throws Exception {
     Club club = build();
-    new MenuOptions(club).main();
-    // Scanner sc = new Scanner(System.in);
-    // boolean flag = false;
-    // while (!flag && sc.hasNextLine()) {
-    // String str = sc.nextLine();
-    // if (str.equals("1"))
-    // flag = true;
-    // }
-    // System.out.print("YOU'VE GOT THROUGH");
-    // flag = false;
-    // while (!flag && sc.hasNextLine()) {
-    // String str = sc.nextLine();
-    // if (str.equals("1"))
-    // flag = true;
-    // }
-    // System.out.print("YOU'VE GOT THROUGH");
-    // sc.close();
+    new MenuOptions(club).main(0);
+    System.out.println("\n\n[PROGRAMA TERMINADO]");
   }
 
   private static Club build() {

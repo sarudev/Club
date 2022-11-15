@@ -58,14 +58,20 @@ public class Menu {
     return this.options;
   }
 
-  public Option addOption(String option, String reason, Lambda lambda) throws Exception {
-    Option op = new Option(option, reason, lambda);
+  public Option addOption(String option, boolean blocked, String reason, Lambda lambda) throws Exception {
+    Option op = new Option(option, blocked, reason, lambda);
     this.options.add(op);
     return op;
   }
 
-  public void removeOption(String option) throws Exception {
-    int idx = this.getOptionIndex(option);
+  public Option addOption(String option, Lambda lambda) throws Exception {
+    Option op = new Option(option, false, "", lambda);
+    this.options.add(op);
+    return op;
+  }
+
+  public void removeOption(String optionName) throws Exception {
+    int idx = this.getOptionIndex(optionName);
 
     if (idx < 0)
       throw new Exception("Option does not exists.");
@@ -74,9 +80,7 @@ public class Menu {
   }
 
   public void moveOption(String optionName, int toIndex) throws Exception {
-    int idx = this.getOptionIndex(optionName);
-
-    if (idx < 0 || idx >= this.options.size() || toIndex < 0 || toIndex >= this.options.size())
+    if (toIndex < 0 || toIndex > this.options.size())
       throw new Exception("Option does not exists.");
 
     Option option = this.getOption(optionName);
@@ -84,7 +88,7 @@ public class Menu {
     if (option == null)
       throw new Exception("Option does not exists.");
 
-    this.options.remove(idx);
+    this.removeOption(optionName);
     this.options.add(toIndex, option);
   }
 
@@ -116,8 +120,8 @@ public class Menu {
     System.out.println();
 
     for (int i = 0; i < this.options.size(); i++) {
-      String op = this.start + i + ". " + this.options.get(i).getName();
-      System.out.println(op);
+      Option op = this.options.get(i);
+      System.out.println(this.start + i + ". " + (op.isBlocked() ? "[BLOCKED] " : "") + op.getName());
     }
   }
 
@@ -125,35 +129,34 @@ public class Menu {
     int optionValue = -1;
 
     System.out.println("");
-    // System.out.println("1");
+
     while (optionValue == -1) {
-      System.out.println("2");
-      String option = Files.scanner("Opcion? > ");
+      System.out.print("Opcion? > ");
+      String option = Files.getSc().nextLine();
       if (option.length() == 1) {
         char cOption = option.charAt(0);
         int value = 0;
         if (Character.isDigit(cOption))
           value = Integer.parseInt(Character.toString(cOption));
-        if (value >= this.start && value < this.options.size() + this.start)
-          optionValue = value;
-        else
+        if (value >= this.start && value < this.options.size() + this.start) {
+          if (!this.options.get(value - this.start).isBlocked())
+            optionValue = value;
+          else
+            System.out.println("[BLOCKED OPTION] Reason: " + this.options.get(value - this.start).getReason() + "\n");
+        } else
           System.out.println("[INVALID OPTION]");
       } else {
         System.out.println("[INVALID OPTION]");
       }
     }
-    // System.out.println("3");
 
-    if (optionValue - this.start > -1) {
-      Option op = this.options.get(optionValue - this.start);
-      Lambda lambda = op.getLambda();
+    Option op = this.options.get(optionValue - this.start);
+    Lambda lambda = op.getLambda();
 
-      for (int i = 0; i < emptyLinesBottom; i++)
-        System.out.println("");
+    for (int i = 0; i < emptyLinesBottom; i++)
+      System.out.println("");
 
-      lambda.exec();
-    }
-    // System.out.println("4");
+    lambda.exec(op);
   }
 
   private int getOptionIndex(String option) {
@@ -169,7 +172,7 @@ public class Menu {
       idx++;
     }
 
-    return idx == 0 ? -1 : idx;
+    return idx == 0 ? -1 : idx - 1;
   }
 }
 
@@ -179,10 +182,10 @@ class Option {
   private boolean blocked;
   private String reason;
 
-  public Option(String name, String reason, Lambda lambda) {
+  public Option(String name, boolean blocked, String reason, Lambda lambda) {
     this.name = name;
     this.lambda = lambda;
-    this.blocked = false;
+    this.blocked = blocked;
     this.reason = reason;
   }
 
@@ -198,11 +201,23 @@ class Option {
     return this.reason;
   }
 
+  public void setReason(String reason) {
+    this.reason = reason;
+  }
+
   public boolean isBlocked() {
     return this.blocked;
   }
 
-  public void setBlocked(boolean blocked) {
+  public void setBlocked(boolean blocked) throws Exception {
+    if (this.reason.length() < 1)
+      throw new Exception("Before setting blocked to true, you need to add a reason.");
     this.blocked = blocked;
   }
+
+  @Override
+  public String toString() {
+    return "Option [name=" + name + ", lambda=" + lambda + ", blocked=" + blocked + ", reason=" + reason + "]";
+  }
+
 }

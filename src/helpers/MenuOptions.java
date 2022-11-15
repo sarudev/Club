@@ -13,46 +13,87 @@ public class MenuOptions {
   private Club club;
   private Map<String, Menu> menus;
 
-  public MenuOptions(Club club) {
+  public MenuOptions(Club club) throws Exception {
     this.club = club;
     this.menus = new HashMap<String, Menu>();
     Menu main = new Menu("Bienvenido al club " + club.getNombre() + ".");
     this.menus.put("main", main);
     Menu inscribirSocio = new Menu("Inscribir socio.");
     this.menus.put("inscribirSocio", inscribirSocio);
+    Menu administracion = new Menu("Administracion.");
+    this.menus.put("administracion", administracion);
   }
 
-  public void main() throws Exception {
+  public void main(int top) throws Exception {
     Menu main = this.menus.get("main");
-    main.addOption("Inscribir socio.", "", () -> this.inscribirSocio());
-    // menu.addOption("Agregar socio a actividad.");
-    // menu.addOption("Actividades.");
-    // menu.addOption("Alquileres.");
-    // menu.addOption("Administracion");
-    main.printTitle(3);
+    String reason = "El fichero con los datos del Club están corrompidos.\nPuede recrear el fichero con datos por defecto con la opcion \"Recrear Fichero\" en \"Administracion\".";
+    if (main.getOptions().isEmpty()) {
+      boolean blocked = this.club.getNombre().equalsIgnoreCase("error");
+      Lambda l = (op) -> {
+        System.out.println("no implementado xd");
+        Thread.sleep(500);
+        System.out.println("Volviendo al menú principal...");
+        Thread.sleep(500);
+        this.main(3);
+      };
+      main.addOption("Inscribir socio.", blocked, reason, (op) -> this.inscribirSocio());
+      main.addOption("[WIP] Agregar socio a actividad.", blocked, reason, l);
+      main.addOption("[WIP] Actividades.", blocked, reason, l);
+      main.addOption("[WIP] Alquileres.", blocked, reason, l);
+      main.addOption("Administracion", (op) -> this.administracion());
+      main.addOption("Salir", (op) -> System.out.println("Gracias por usar nuestro programa :)"));
+    }
+    main.printTitle(this.club.getNombre().equalsIgnoreCase("error") ? 3 : top);
     main.printOptions(2);
-    main.selectOption(0);
+    main.selectOption(2);
   }
 
   public void inscribirSocio() throws Exception {
-    // System.out.println("a");
     Menu inscribirSocio = this.menus.get("inscribirSocio");
     Map<String, Object> socio = new HashMap<String, Object>();
-    inscribirSocio.addOption("Datos del socio.", "", () -> {
-      String nombre = Files.scanner("Nombre? >");
-      String apellido = Files.scanner("Apellido? >");
-      int dni = Integer.parseInt(Files.scanner("DNI? >"));
-      int edad = Integer.parseInt(Files.scanner("Edad? >"));
-      System.out.println(nombre);
-      System.out.println(apellido);
-      System.out.println(dni);
-      System.out.println(edad);
-    });
-    inscribirSocio.printTitle(1);
-    inscribirSocio.printOptions(2);
-    inscribirSocio.selectOption(0);
-    System.out.println("b");
+    if (inscribirSocio.getOptions().isEmpty()) {
+      Option pri = inscribirSocio.addOption("Inscribir socio.", true, "Debe completar los datos primero.", (op) -> {
+        try {
+          System.out.println("Inscribiendo al socio...");
+          Thread.sleep(500);
+          club.agregarSocio((String) socio.get("nombre"), (String) socio.get("apellido"), (int) socio.get("dni"),
+              (int) socio.get("edad"), 2_000);
+          Files.write("data", club.toHashMap());
+        } catch (Exception e) {
+          System.out.println("Este error no deberia suceder... " + e.getMessage());
+        } finally {
+          System.out.println("Inscripcion exitosa!");
+        }
+        Thread.sleep(500);
+        System.out.println("Volviendo al menu principal...");
 
+        Thread.sleep(500);
+        op.setBlocked(true);
+        this.main(5);
+      });
+      inscribirSocio.addOption("Datos del socio.", (op) -> {
+        System.out.println(
+            "Por favor ingrese los datos del socio, tenga en cuenta que luego para anotarlo a una actividad necesitará el dni.\n\n");
+        String nombre = Files.scan("Nombre? > ", String.class);
+        String apellido = Files.scan("Apellido? > ", String.class);
+        int dni = Integer.parseInt(Files.scan("DNI? > ", Integer.TYPE));
+        int edad = Integer.parseInt(Files.scan("Edad? > ", Integer.TYPE));
+        socio.put("nombre", nombre);
+        socio.put("apellido", apellido);
+        socio.put("dni", dni);
+        socio.put("edad", edad);
+        pri.setBlocked(false);
+        this.inscribirSocio();
+      });
+      inscribirSocio.addOption("Volver atrás.", (op) -> {
+        pri.setBlocked(true);
+        this.main(3);
+      });
+      inscribirSocio.moveOption("Inscribir socio.", 1);
+    }
+    inscribirSocio.printTitle(4);
+    inscribirSocio.printOptions(2);
+    inscribirSocio.selectOption(3);
   }
 
   public void agregarSocioActividad() throws Exception {
@@ -65,6 +106,41 @@ public class MenuOptions {
 
   public void alquileres() throws Exception {
 
+  }
+
+  public void administracion() throws Exception {
+    Menu administracion = this.menus.get("administracion");
+    String reason = "El fichero con los datos del Club están corrompidos.\nPuede recrear el fichero con datos por defecto con la opcion \"Recrear Fichero\" en \"Administracion\".";
+    if (administracion.getOptions().isEmpty()) {
+      boolean blocked = this.club.getNombre().equalsIgnoreCase("error");
+      Lambda l = (op) -> {
+        System.out.println("no implementado xd");
+        Thread.sleep(500);
+        System.out.println("Volviendo al menú administracion...");
+        Thread.sleep(500);
+        this.administracion();
+      };
+      administracion.addOption("[WIP] Relacionado socios.", blocked, reason, l);
+      administracion.addOption("[WIP] Relacionado Profesores.", blocked, reason, l);
+      administracion.addOption("[WIP] Relacionado Actividades.", blocked, reason, l);
+      administracion.addOption("[WIP] Relacionado Alquileres.", blocked, reason, l);
+      administracion.addOption("Recrear Fichero.", (op) -> {
+        System.out.println("Recreando fichero...");
+        Thread.sleep(500);
+        try {
+          recrearFichero();
+        } catch (Exception e) {
+          System.out.println("Esto no deberia haber sucedido... " + e.getMessage());
+        } finally {
+          System.out.println("\nFichero recreado.\nPor favor reinicie el programa.");
+        }
+      });
+      // volver atras
+      administracion.addOption("Volver atrás.", (op) -> main(3));
+    }
+    administracion.printTitle(2);
+    administracion.printOptions(2);
+    administracion.selectOption(1);
   }
 
   public void recrearFichero() throws Exception {

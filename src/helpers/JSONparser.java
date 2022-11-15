@@ -75,43 +75,48 @@ public class JSONparser {
       strArr.forEach(item1 -> {
         String key = item1.substring(0, item1.indexOf("="));
         String value = item1.substring(item1.indexOf("=") + 1, item1.length());
-        if (value.startsWith("[")) {
-          // System.out.println("-> " + key + ": [");
-          try {
-            map.put(key, trueStringToHashMap(value));
-          } catch (Exception e) {
-            throw new RuntimeException(e);
+        try {
+          if (value.startsWith("[")) {
+            // System.out.println("-> " + key + ": [");
+            try {
+              map.put(key, trueStringToHashMap(value));
+            } catch (Exception e) {
+              throw new RuntimeException(e);
+            }
+            // System.out.println("-> ]");
+          } else if (value.startsWith("{")) {
+            // System.out.println("-> " + key + ": {");
+            Object temp;
+            try {
+              temp = trueStringToHashMap(value);
+            } catch (Exception e) {
+              throw new RuntimeException(e);
+            }
+            map.put(key, temp);
+            // System.out.println("-> }");
+            // System.out.println("XXXXXXXXXXXX " + temp);
+          } else if (value.startsWith("\"")) {
+            // System.out.println("else - " + key + ": " + value);
+            map.put(key, value.substring(1, value.length() - 1));
+          } else if (value.equalsIgnoreCase("true")) {
+            // System.out.println("else - " + key + ": " + value);
+            map.put(key, true);
+          } else if (value.equalsIgnoreCase("false")) {
+            // System.out.println("else - " + key + ": " + value);
+            map.put(key, false);
+          } else if (Character.isDigit(value.charAt(0)) && !value.contains(".")) {
+            // System.out.println("else - " + key + ": " + value);
+            map.put(key, Integer.parseInt(value));
+          } else if (Character.isDigit(value.charAt(0)) && value.contains(".")) {
+            // System.out.println("else - " + key + ": " + value);
+            map.put(key, Double.parseDouble(value));
+          } else {
+            // System.out.println("else - " + key + ": " + value);
+            // map.put(key, value);
+            throw new Exception("Corrupted data.");
           }
-          // System.out.println("-> ]");
-        } else if (value.startsWith("{")) {
-          // System.out.println("-> " + key + ": {");
-          Object temp;
-          try {
-            temp = trueStringToHashMap(value);
-          } catch (Exception e) {
-            throw new RuntimeException(e);
-          }
-          map.put(key, temp);
-          // System.out.println("-> }");
-          // System.out.println("XXXXXXXXXXXX " + temp);
-        } else if (value.startsWith("\"")) {
-          // System.out.println("else - " + key + ": " + value);
-          map.put(key, value.substring(1, value.length() - 1));
-        } else if (value.equalsIgnoreCase("true")) {
-          // System.out.println("else - " + key + ": " + value);
-          map.put(key, true);
-        } else if (value.equalsIgnoreCase("false")) {
-          // System.out.println("else - " + key + ": " + value);
-          map.put(key, false);
-        } else if (Character.isDigit(value.charAt(0)) && !value.contains(".")) {
-          // System.out.println("else - " + key + ": " + value);
-          map.put(key, Integer.parseInt(value));
-        } else if (Character.isDigit(value.charAt(0)) && value.contains(".")) {
-          // System.out.println("else - " + key + ": " + value);
-          map.put(key, Double.parseDouble(value));
-        } else {
-          // System.out.println("else - " + key + ": " + value);
-          map.put(key, value);
+        } catch (Exception e) {
+          throw new RuntimeException("Corrupted data.");
         }
       });
       // System.out.println("-> }");
