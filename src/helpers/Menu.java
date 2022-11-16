@@ -1,7 +1,10 @@
 package helpers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Menu {
   private String title;
@@ -108,16 +111,20 @@ public class Menu {
     for (int i = 0; i < emptyLinesTop; i++)
       System.out.println("");
     System.out.println("=".repeat(50));
-    System.out.print(title);
-    if (this.description.length() > 0)
-      System.out.println("\n" + description);
+    System.out.println(title);
+  }
+
+  public void printDescription(int emptyLinesTop) {
+    if (this.description.length() > 0) {
+      for (int i = 0; i < emptyLinesTop; i++)
+        System.out.println("");
+      System.out.println(description);
+    }
   }
 
   public void printOptions(int emptyLinesTop) throws Exception {
     for (int i = 0; i < emptyLinesTop; i++)
       System.out.println("");
-
-    System.out.println();
 
     for (int i = 0; i < this.options.size(); i++) {
       Option op = this.options.get(i);
@@ -175,6 +182,15 @@ public class Menu {
 
     return idx == 0 ? -1 : idx - 1;
   }
+
+  public Map<String, Object> toHashMap() {
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("title", "\"" + this.title + "\"");
+    map.put("description", "\"" + this.description + "\"");
+    map.put("options", this.options.stream().map((i) -> i.toHashMap()).collect(Collectors.toList()));
+    map.put("start", this.start);
+    return map;
+  }
 }
 
 class Option {
@@ -221,4 +237,12 @@ class Option {
     return "Option [name=" + name + ", LambdaOne=" + lambda + ", blocked=" + blocked + ", reason=" + reason + "]";
   }
 
+  public Map<String, Object> toHashMap() {
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("name", "\"" + this.name + "\"");
+    map.put("lambda", this.lambda);
+    map.put("blocked", this.blocked);
+    map.put("reason", "\"" + this.reason + "\"");
+    return map;
+  }
 }

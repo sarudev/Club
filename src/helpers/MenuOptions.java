@@ -6,6 +6,7 @@ import java.util.Map;
 import modules.Actividad;
 import modules.Alquiler;
 import modules.Club;
+import modules.Persona;
 import modules.Profesor;
 import modules.Socio;
 
@@ -20,8 +21,14 @@ public class MenuOptions {
     Menu main = new Menu("Bienvenido al club " + club.getNombre() + ".");
     this.menus.put("main", main);
 
-    Menu inscribirSocio = new Menu("Inscribir socio.");
-    this.menus.put("inscribirSocio", inscribirSocio);
+    Menu main_rel_soc = new Menu("Relacionado Socios.");
+    this.menus.put("main_rel_soc", main_rel_soc);
+
+    Menu main_rel_prof = new Menu("Relacionado Profesores.");
+    this.menus.put("main_rel_prof", main_rel_prof);
+
+    Menu inscribir = new Menu("Inscribir [type].");
+    this.menus.put("inscribir", inscribir);
 
     Menu administracion = new Menu("Administracion.");
     this.menus.put("administracion", administracion);
@@ -39,7 +46,7 @@ public class MenuOptions {
     this.menus.put("adm_rel_alq", adm_rel_alq);
   }
 
-  public void main(int top) throws Exception {
+  public void main() throws Exception {
     Menu main = this.menus.get("main");
     String reason = "El fichero con los datos del Club estan corrompidos.\nPuede recrear el fichero con datos por defecto con la opcion \"Recrear Fichero\" en \"Administracion\".";
     if (main.getOptions().isEmpty()) {
@@ -49,18 +56,42 @@ public class MenuOptions {
         Thread.sleep(500);
         System.out.println("Volviendo al menú principal...");
         Thread.sleep(500);
-        this.main(3);
+        this.main();
       };
-      main.addOption("[WIP] Relacionado socios.", blocked, reason, l);
-      main.addOption("[WIP] Relacionado Profesores.", blocked, reason, l);
+      main.addOption("Relacionado socios.", blocked, reason, (op) -> this.main_rel_soc());
+      main.addOption("Relacionado Profesores.", blocked, reason, (op) -> this.main_rel_prof());
       main.addOption("[WIP] Relacionado Actividades.", blocked, reason, l);
       main.addOption("[WIP] Relacionado Alquileres.", blocked, reason, l);
       main.addOption("[MID] Administracion", (op) -> this.administracion());
       main.addOption("Salir", (op) -> System.out.println("Gracias por usar nuestro programa :)"));
     }
-    main.printTitle(this.club.getNombre().equalsIgnoreCase("error") ? 3 : top);
+    main.printTitle(this.club.getNombre().equalsIgnoreCase("error") ? 3 : 0);
     main.printOptions(2);
-    main.selectOption(2);
+    main.selectOption(1);
+  }
+
+  private void main_rel_soc() throws Exception {
+    Menu main_rel_soc = this.menus.get("main_rel_soc");
+    if (main_rel_soc.getOptions().isEmpty()) {
+      main_rel_soc.addOption("Inscribir Socio.", (op) -> this.inscribir(() -> this.adm_rel_soc(), "socio", true));
+      main_rel_soc.addOption("Dar de baja Socio.", (op) -> this.baja(() -> this.adm_rel_soc(), "socio"));
+      main_rel_soc.addOption("Volver atras.", (op) -> this.main());
+    }
+    main_rel_soc.printTitle(0);
+    main_rel_soc.printOptions(2);
+    main_rel_soc.selectOption(1);
+  }
+
+  private void main_rel_prof() throws Exception {
+    Menu main_rel_prof = this.menus.get("main_rel_prof");
+    if (main_rel_prof.getOptions().isEmpty()) {
+      main_rel_prof.addOption("Traer Profesor.", (op) -> this.traer(() -> this.main_rel_prof(), "profesor"));
+      main_rel_prof.addOption("Traer Profesores.", (op) -> this.traers(() -> this.main_rel_prof(), "profesor"));
+      main_rel_prof.addOption("Volver atras.", (op) -> this.main());
+    }
+    main_rel_prof.printTitle(0);
+    main_rel_prof.printOptions(2);
+    main_rel_prof.selectOption(1);
   }
 
   private void administracion() throws Exception {
@@ -69,7 +100,7 @@ public class MenuOptions {
     if (administracion.getOptions().isEmpty()) {
       boolean blocked = this.club.getNombre().equalsIgnoreCase("error");
       administracion.addOption("Relacionado socios.", blocked, reason, (op) -> adm_rel_soc());
-      administracion.addOption("[WIP] Relacionado Profesores.", blocked, reason,
+      administracion.addOption("Relacionado Profesores.", blocked, reason,
           (op) -> adm_rel_prof());
       administracion.addOption("[WIP] Relacionado Actividades.", blocked, reason,
           (op) -> adm_rel_act());
@@ -89,9 +120,9 @@ public class MenuOptions {
         System.out.println("=".repeat(50));
       });
       // volver atras
-      administracion.addOption("Volver atras.", (op) -> main(3));
+      administracion.addOption("Volver atras.", (op) -> main());
     }
-    administracion.printTitle(2);
+    administracion.printTitle(0);
     administracion.printOptions(2);
     administracion.selectOption(1);
   }
@@ -99,128 +130,196 @@ public class MenuOptions {
   private void adm_rel_soc() throws Exception {
     Menu adm_rel_soc = this.menus.get("adm_rel_soc");
     if (adm_rel_soc.getOptions().isEmpty()) {
-      adm_rel_soc.addOption("Inscribir Socio.", (op) -> this.inscribirSocio(() -> this.adm_rel_soc()));
-      adm_rel_soc.addOption("Traer Socio.", (op) -> {
-        System.out.println("=".repeat(50));
-        String dni = Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos y no estar repetido.",
-            (str) -> str.length() == 8);
-        System.out.println("\n\nBuscando Socio...");
-        Thread.sleep(500);
-        Socio soc = club.traerSocio(Integer.parseInt(dni));
-        if (soc == null) {
-          System.out.println("No existe un socio con ese DNI!");
-          Thread.sleep(500);
-        } else {
-          JSONparser.print(soc.toHashMap(), 0);
-          Thread.sleep(1500);
-        }
-        System.out.println("Volviendo atras...");
-        System.out.println("=".repeat(50));
-        Thread.sleep(500);
-        this.adm_rel_soc();
-      });
-      adm_rel_soc.addOption("Traer Socios.", (op) -> {
-        System.out.println("=".repeat(50));
-        System.out.println("Lista de socios:\n");
-        JSONparser.print(club.toHashMap().get("lstSocios"), 0);
-        System.out.println("\nVolviendo atras...");
-        System.out.println("=".repeat(50));
-        Thread.sleep(2500);
-        this.adm_rel_soc();
-      });
-      adm_rel_soc.addOption("Dar de baja Socio.", (op) -> {
-        System.out.println("=".repeat(50));
-        String dni = Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos y no estar repetido.",
-            (str) -> str.length() == 8);
-        Socio socio = club.traerSocio(Integer.parseInt(dni));
-        if (socio == null)
-          System.out.println("\nNo existe un socio con ese DNI!");
-        else {
-          try {
-            System.out.println("\nIntentando eliminar socio...");
-            club.eliminarSocio(socio.getIdCarnetSocio());
-            Files.write("data", club.toHashMap());
-          } catch (Exception e) {
-            System.out.println("Este error no debería suceder... " + e.getMessage());
-          } finally {
-            Thread.sleep(500);
-            System.out.println("\nSocio eliminado correctamente.");
-          }
-        }
-        System.out.println("\nVolviendo atras...");
-        System.out.println("=".repeat(50));
-        Thread.sleep(2500);
-        this.adm_rel_soc();
-      });
-      adm_rel_soc.addOption("Volver atras.", (op) -> {
-        this.administracion();
-      });
+      adm_rel_soc.addOption("Inscribir Socio.", (op) -> this.inscribir(() -> this.adm_rel_soc(), "socio", true));
+      adm_rel_soc.addOption("Traer Socio.", (op) -> this.traer(() -> this.adm_rel_soc(), "socio"));
+      adm_rel_soc.addOption("Traer Socios.", (op) -> this.traers(() -> this.adm_rel_soc(), "socio"));
+      adm_rel_soc.addOption("Dar de baja Socio.", (op) -> this.baja(() -> this.adm_rel_soc(), "socio"));
+      adm_rel_soc.addOption("Volver atras.", (op) -> this.administracion());
     }
-    adm_rel_soc.printTitle(2);
+    adm_rel_soc.printTitle(0);
     adm_rel_soc.printOptions(2);
     adm_rel_soc.selectOption(1);
-
   }
 
-  private void inscribirSocio(Lambda back) throws Exception {
-    Menu inscribirSocio = this.menus.get("inscribirSocio");
-    Map<String, Object> socio = new HashMap<String, Object>();
-    if (inscribirSocio.getOptions().isEmpty()) {
-      Option pri = inscribirSocio.addOption("Inscribir socio.", true, "Debe completar los datos primero.", (op) -> {
-        System.out.println("=".repeat(50));
-        try {
-          System.out.println("Inscribiendo al socio...");
-          Thread.sleep(500);
-          try {
-            club.agregarSocio((String) socio.get("nombre"), (String) socio.get("apellido"), (int) socio.get("dni"),
-                (int) socio.get("edad"), 2_000);
-            System.out.println("Inscripcion exitosa!");
-          } catch (Exception e) {
-            System.out.println("ERROR: " + e.getMessage());
-          }
-          Files.write("data", club.toHashMap());
-        } catch (Exception e) {
-          System.out.println("Este error no deberia suceder... " + e.getMessage());
-        }
-        Thread.sleep(500);
-        System.out.println("Volviendo atras...");
-        System.out.println("=".repeat(50));
+  private void adm_rel_prof() throws Exception {
+    Menu adm_rel_prof = this.menus.get("adm_rel_prof");
+    if (adm_rel_prof.getOptions().isEmpty()) {
+      adm_rel_prof.addOption("Inscribir Profesor.",
+          (op) -> this.inscribir(() -> this.adm_rel_prof(), "profesor", true));
+      adm_rel_prof.addOption("Traer Profesor.", (op) -> this.traer(() -> this.adm_rel_prof(), "profesor"));
+      adm_rel_prof.addOption("Traer Profesores.", (op) -> this.traers(() -> this.adm_rel_prof(), "profesor"));
+      adm_rel_prof.addOption("Dar de baja Profesor.", (op) -> this.baja(() -> this.adm_rel_prof(), "profesor"));
+      adm_rel_prof.addOption("Volver atras.", (op) -> this.administracion());
+    }
+    adm_rel_prof.printTitle(0);
+    adm_rel_prof.printOptions(2);
+    adm_rel_prof.selectOption(1);
+  }
 
-        Thread.sleep(500);
-        op.setBlocked(true);
-        back.exec();
-      });
-      inscribirSocio.addOption("Datos del socio.", (op) -> {
+  private void inscribir(Lambda back, String type, boolean clear) throws Exception {
+    Menu inscribir = this.menus.get("inscribir");
+    inscribir.setTitle(inscribir.getTitle().replace("[type]", type));
+    Map<String, Object> obj = new HashMap<String, Object>();
+    if (clear) {
+      inscribir.getOptions().clear();
+      Option pri = inscribir.addOption("Inscribir " + type + ".", true, "Debe completar los datos primero.",
+          (op) -> {
+            System.out.println("=".repeat(50));
+            try {
+              System.out.println("Inscribiendo al " + type + "...");
+              Thread.sleep(500);
+              try {
+                if (type.equalsIgnoreCase("profesor")) {
+                  club.agregarProfesor((String) obj.get("nombre"), (String) obj.get("apellido"), (int) obj.get("dni"),
+                      (int) obj.get("edad"), 80_000);
+                } else if (type.equalsIgnoreCase("socio")) {
+                  club.agregarSocio((String) obj.get("nombre"), (String) obj.get("apellido"), (int) obj.get("dni"),
+                      (int) obj.get("edad"), 2_000);
+                } else {
+                  throw new Exception("INVALID!!!!");
+                }
+                System.out.println("Inscripcion exitosa!");
+              } catch (Exception e) {
+                System.out.println("ERROR: " + e.getMessage());
+              }
+              Files.write("data", club.toHashMap());
+            } catch (Exception e) {
+              System.out.println("Este error no deberia suceder... " + e.getMessage());
+            }
+            Thread.sleep(500);
+            System.out.println("Volviendo atras...");
+            System.out.println("=".repeat(50));
+
+            Thread.sleep(500);
+            op.setBlocked(true);
+            inscribir.setDescription("");
+            back.exec();
+          });
+      inscribir.addOption("Ingresar datos del " + type + ".", (op) -> {
         System.out.println("=".repeat(50));
-        System.out.println(
-            "Por favor ingrese los datos del socio, tenga en cuenta que luego para anotarlo a una actividad necesitara el dni.\n\n");
+        String explain = "Por favor ingrese los datos del " + type;
+        explain += type.equalsIgnoreCase("socio")
+            ? ", tenga en cuenta que luego para anotarlo a una actividad necesitara el dni.\n"
+            : ".\n";
+        System.out.println(explain);
         String nombre = Files.scan("Nombre? > ", String.class);
         String apellido = Files.scan("Apellido? > ", String.class);
         String dni = Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos y no estar repetido.",
             (str) -> club.traerSocio(Integer.parseInt(str)) == null && str.length() == 8);
         String edad = Files.scan("Edad? > ", Integer.TYPE, "El dato debe ser un numero mayor a 0.",
             (str) -> Integer.parseInt(str) > 0);
-        socio.put("nombre", nombre);
-        socio.put("apellido", apellido);
-        socio.put("dni", Integer.parseInt(dni));
-        socio.put("edad", Integer.parseInt(edad));
+        obj.put("nombre", nombre);
+        obj.put("apellido", apellido);
+        obj.put("dni", Integer.parseInt(dni));
+        obj.put("edad", Integer.parseInt(edad));
+        obj.put("persona", new Persona(nombre, apellido, Integer.parseInt(dni), Integer.parseInt(edad)));
+        inscribir.setDescription(JSONparser.print(((Persona) obj.get("persona")).toHashMap(), 0));
         pri.setBlocked(false);
+        System.out.println(JSONparser.print(inscribir.toHashMap(), 0));
         System.out.println("=".repeat(50));
-        this.inscribirSocio(back);
+        this.inscribir(back, type, false);
       });
-      inscribirSocio.addOption("Volver atras.", (op) -> {
+      inscribir.addOption("Volver atras.", (op) -> {
         pri.setBlocked(true);
+        inscribir.setDescription("");
         back.exec();
       });
-      inscribirSocio.moveOption("Inscribir socio.", 1);
     }
-    inscribirSocio.printTitle(4);
-    inscribirSocio.printOptions(2);
-    inscribirSocio.selectOption(3);
+    inscribir.moveOption("Inscribir " + type + ".", 1);
+    inscribir.printTitle(0);
+    inscribir.printDescription(1);
+    inscribir.printOptions(2);
+    inscribir.selectOption(1);
   }
 
-  private void adm_rel_prof() throws Exception {
+  private void traer(Lambda back, String type) throws Exception {
+    System.out.println("=".repeat(50));
+    String dni = Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos y no estar repetido.",
+        (str) -> str.length() == 8);
+    System.out.println("\n\nBuscando " + type + "...");
+    Thread.sleep(500);
+    Persona soc = null;
+    if (type.equalsIgnoreCase("profesor")) {
+      soc = club.traerProfesor(Integer.parseInt(dni));
+    } else if (type.equalsIgnoreCase("socio")) {
+      soc = club.traerSocio(Integer.parseInt(dni));
+    } else {
+      throw new Exception("INVALID!!!!");
+    }
 
+    if (soc == null) {
+      System.out.println("No existe un " + type + " con ese DNI!");
+      Thread.sleep(500);
+    } else {
+      System.out.println(JSONparser.print(soc.toHashMap(), 0));
+      Thread.sleep(1500);
+    }
+    System.out.println("Volviendo atras...");
+    System.out.println("=".repeat(50));
+    Thread.sleep(500);
+    back.exec();
+  }
+
+  private void traers(Lambda back, String type) throws Exception {
+    System.out.println("=".repeat(50));
+    System.out.println("Lista de " + type + (type.equalsIgnoreCase("socio") ? "s" : "es") + ":\n");
+    if (type.equalsIgnoreCase("profesor")) {
+      System.out.println(JSONparser.print(club.toHashMap().get("lstProfesores"), 0));
+    } else if (type.equalsIgnoreCase("socio")) {
+      System.out.println(JSONparser.print(club.toHashMap().get("lstSocios"), 0));
+    } else {
+      throw new Exception("INVALID!!!!");
+    }
+    System.out.println("\nVolviendo atras...");
+    System.out.println("=".repeat(50));
+    Thread.sleep(2500);
+    back.exec();
+  }
+
+  private void baja(Lambda back, String type) throws Exception {
+    System.out.println("=".repeat(50));
+    String dni = Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos y no estar repetido.",
+        (str) -> str.length() == 8);
+    if (type.equalsIgnoreCase("profesor")) {
+      Profesor prof = club.traerProfesor(Integer.parseInt(dni));
+      if (prof == null)
+        System.out.println("\nNo existe un " + type + " con ese DNI!");
+      else {
+        try {
+          System.out.println("\nIntentando eliminar " + type + "...");
+          club.eliminarProfesor(prof.getIdCarnetProfesor());
+          Files.write("data", club.toHashMap());
+        } catch (Exception e) {
+          System.out.println("Este error no debería suceder... " + e.getMessage());
+        } finally {
+          Thread.sleep(500);
+          System.out
+              .println("\n" + type.replace(String.valueOf(type.charAt(0)), String.valueOf(type.charAt(0)).toUpperCase())
+                  + " eliminado correctamente.");
+        }
+      }
+    } else if (type.equalsIgnoreCase("socio")) {
+      Socio socio = club.traerSocio(Integer.parseInt(dni));
+      if (socio == null)
+        System.out.println("\nNo existe un socio con ese DNI!");
+      else {
+        try {
+          System.out.println("\nIntentando eliminar socio...");
+          club.eliminarSocio(socio.getIdCarnetSocio());
+          Files.write("data", club.toHashMap());
+        } catch (Exception e) {
+          System.out.println("Este error no debería suceder... " + e.getMessage());
+        } finally {
+          Thread.sleep(500);
+          System.out.println("\nSocio eliminado correctamente.");
+        }
+      }
+    } else {
+      throw new Exception("INVALID!!!!");
+    }
+    System.out.println("\nVolviendo atras...");
+    System.out.println("=".repeat(50));
+    Thread.sleep(2500);
   }
 
   private void adm_rel_act() throws Exception {
@@ -266,6 +365,6 @@ public class MenuOptions {
     club.agregarDiaYhorario(eventos, "sabado", 8, 2);
 
     Files.write("data", club.toHashMap());
-    JSONparser.print(club.toHashMap(), 0);
+    System.out.println(JSONparser.print(club.toHashMap(), 0));
   }
 }

@@ -6,61 +6,66 @@ import java.util.List;
 import java.util.Map;
 
 public class JSONparser {
-  public static void print(Object obj, int indent) {
+  @SuppressWarnings("unchecked")
+  public static String print(Object obj, int indent) {
+    String[] text = { "" };
     int newIndent = indent == 0 ? 2 : indent;
     boolean start = newIndent == 2;
     if (obj instanceof Map) {
       if (start)
-        System.out.println("{");
+        text[0] += "{\n";
       Map<String, Object> map = (Map<String, Object>) obj;
       map.forEach((key, value) -> {
         if (value instanceof Map) {
-          System.out.println(" ".repeat(newIndent) + key + ": {");
-          print(value, newIndent + 2);
-          System.out.println(" ".repeat(newIndent) + "},");
+          text[0] += " ".repeat(newIndent) + key + ": {\n";
+          text[0] += print(value, newIndent + 2);
+          text[0] += " ".repeat(newIndent) + "},\n";
         } else if (value instanceof List) {
           List<Object> lst = (List<Object>) value;
           if (lst.isEmpty())
-            System.out.println(" ".repeat(newIndent) + key + ": [],");
+            text[0] += " ".repeat(newIndent) + key + ": [],\n";
           else {
-            System.out.println(" ".repeat(newIndent) + key + ": [");
-            print(value, newIndent + 2);
-            System.out.println(" ".repeat(newIndent) + "],");
+            text[0] += " ".repeat(newIndent) + key + ": [\n";
+            text[0] += print(value, newIndent + 2);
+            text[0] += " ".repeat(newIndent) + "],\n";
           }
         } else if (value instanceof String) {
           String val = (String) value;
           if (val.startsWith("\""))
-            System.out.println(" ".repeat(newIndent) + key + ": " + value + ",");
+            text[0] += " ".repeat(newIndent) + key + ": " + value + ",\n";
           else
-            System.out.println(" ".repeat(newIndent) + key + ": \"" + value + "\",");
+            text[0] += " ".repeat(newIndent) + key + ": \"" + value + "\",\n";
         } else {
-          System.out.println(" ".repeat(newIndent) + key + ": " + value + ",");
+          text[0] += " ".repeat(newIndent) + key + ": " + value + ",\n";
         }
       });
       if (start)
-        System.out.println("}");
+        text[0] += "}\n";
     } else if (obj instanceof List) {
       if (start)
-        System.out.println("[");
+        text[0] += "[\n";
       List<Object> lst = (List<Object>) obj;
       lst.forEach(item -> {
         if (item instanceof Map) {
-          System.out.println(" ".repeat(newIndent) + "{");
-          print(item, newIndent + 2);
-          System.out.println(" ".repeat(newIndent) + "},");
+          text[0] += " ".repeat(newIndent) + "{\n";
+          text[0] += print(item, newIndent + 2);
+          text[0] += " ".repeat(newIndent) + "},\n";
         } else if (item instanceof List) {
-          System.out.println(" ".repeat(newIndent) + "[");
-          print(item, newIndent + 2);
-          System.out.println(" ".repeat(newIndent) + "],");
+          text[0] += " ".repeat(newIndent) + "[\n";
+          text[0] += print(item, newIndent + 2);
+          text[0] += " ".repeat(newIndent) + "],\n";
         } else {
-          System.out.println(" ".repeat(newIndent) + item + ",");
+          text[0] += " ".repeat(newIndent) + item + ",\n";
         }
       });
       if (start)
-        System.out.println("]");
+        text[0] += "]\n";
     }
+
+    return text[0].substring(0, text[0].length() - 1);
   }
 
+  @SuppressWarnings("unchecked")
   public static Map<String, Object> stringToHashMap(String str) throws Exception {
     return (Map<String, Object>) trueStringToHashMap(str);
   }
@@ -71,21 +76,17 @@ public class JSONparser {
     List<String> strArr = convert(str);
 
     if (str.startsWith("{")) {
-      // System.out.println("-> {");
       strArr.forEach(item1 -> {
         String key = item1.substring(0, item1.indexOf("="));
         String value = item1.substring(item1.indexOf("=") + 1, item1.length());
         try {
           if (value.startsWith("[")) {
-            // System.out.println("-> " + key + ": [");
             try {
               map.put(key, trueStringToHashMap(value));
             } catch (Exception e) {
               throw new RuntimeException(e);
             }
-            // System.out.println("-> ]");
           } else if (value.startsWith("{")) {
-            // System.out.println("-> " + key + ": {");
             Object temp;
             try {
               temp = trueStringToHashMap(value);
@@ -93,33 +94,23 @@ public class JSONparser {
               throw new RuntimeException(e);
             }
             map.put(key, temp);
-            // System.out.println("-> }");
-            // System.out.println("XXXXXXXXXXXX " + temp);
           } else if (value.startsWith("\"")) {
-            // System.out.println("else - " + key + ": " + value);
             map.put(key, value.substring(1, value.length() - 1));
           } else if (value.equalsIgnoreCase("true")) {
-            // System.out.println("else - " + key + ": " + value);
             map.put(key, true);
           } else if (value.equalsIgnoreCase("false")) {
-            // System.out.println("else - " + key + ": " + value);
             map.put(key, false);
           } else if (Character.isDigit(value.charAt(0)) && !value.contains(".")) {
-            // System.out.println("else - " + key + ": " + value);
             map.put(key, Integer.parseInt(value));
           } else if (Character.isDigit(value.charAt(0)) && value.contains(".")) {
-            // System.out.println("else - " + key + ": " + value);
             map.put(key, Double.parseDouble(value));
           } else {
-            // System.out.println("else - " + key + ": " + value);
-            // map.put(key, value);
             throw new Exception("Corrupted data.");
           }
         } catch (Exception e) {
           throw new RuntimeException("Corrupted data.");
         }
       });
-      // System.out.println("-> }");
     } else if (str.startsWith("[")) {
       List<Object> values = new ArrayList<Object>();
 
@@ -131,15 +122,11 @@ public class JSONparser {
           } catch (Exception e) {
             throw new RuntimeException(e);
           }
-          // System.out.println("++++++++++++ " + temp);
           values.add(temp);
         } else {
-          // System.out.println("############ " + item1);
           values.add(item1);
         }
       });
-
-      // System.out.println("-----------> " + values);
 
       return values;
     }

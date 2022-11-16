@@ -10,7 +10,7 @@ import modules.Club;
 public class Test {
   public static void main(String[] args) throws Exception {
     Club club = build();
-    new MenuOptions(club).main(0);
+    new MenuOptions(club).main();
     System.out.println("\n\n[PROGRAMA TERMINADO]");
   }
 

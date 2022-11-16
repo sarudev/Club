@@ -3,7 +3,7 @@ package modules;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Persona {
+public class Persona {
   protected String nombre;
   protected String apellido;
   protected int dni;
