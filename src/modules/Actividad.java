@@ -122,7 +122,16 @@ public class Actividad {
     if (prof == null)
       throw new Exception("No existe ese socio.");
 
-    this.lstSocios.remove(id);
+    int i = 0;
+    boolean ok = false;
+    while (i < this.lstSocios.size() && !ok) {
+      if (this.lstSocios.get(i).getIdCarnetSocio() == id) {
+        ok = true;
+      }
+      i++;
+    }
+
+    this.lstSocios.remove(i - 1);
   }
 
   public Map<String, Object> toHashMap() {

@@ -68,7 +68,7 @@ public class MenuOptions {
     String reason = "El fichero con los datos del Club estan corrompidos.\nPuede recrear el fichero con datos por defecto con la opcion \"Recrear Fichero\" en \"Administracion\".";
     if (administracion.getOptions().isEmpty()) {
       boolean blocked = this.club.getNombre().equalsIgnoreCase("error");
-      administracion.addOption("[MID] Relacionado socios.", blocked, reason, (op) -> adm_rel_soc());
+      administracion.addOption("Relacionado socios.", blocked, reason, (op) -> adm_rel_soc());
       administracion.addOption("[WIP] Relacionado Profesores.", blocked, reason,
           (op) -> adm_rel_prof());
       administracion.addOption("[WIP] Relacionado Actividades.", blocked, reason,
@@ -76,6 +76,7 @@ public class MenuOptions {
       administracion.addOption("[WIP] Relacionado Alquileres.", blocked, reason,
           (op) -> adm_rel_alq());
       administracion.addOption("Recrear Fichero.", (op) -> {
+        System.out.println("=".repeat(50));
         System.out.println("Recreando fichero...");
         Thread.sleep(500);
         try {
@@ -85,6 +86,7 @@ public class MenuOptions {
         } finally {
           System.out.println("\nFichero recreado.\nPor favor reinicie el programa.");
         }
+        System.out.println("=".repeat(50));
       });
       // volver atras
       administracion.addOption("Volver atras.", (op) -> main(3));
@@ -99,6 +101,7 @@ public class MenuOptions {
     if (adm_rel_soc.getOptions().isEmpty()) {
       adm_rel_soc.addOption("Inscribir Socio.", (op) -> this.inscribirSocio(() -> this.adm_rel_soc()));
       adm_rel_soc.addOption("Traer Socio.", (op) -> {
+        System.out.println("=".repeat(50));
         String dni = Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos y no estar repetido.",
             (str) -> str.length() == 8);
         System.out.println("\n\nBuscando Socio...");
@@ -112,12 +115,42 @@ public class MenuOptions {
           Thread.sleep(1500);
         }
         System.out.println("Volviendo atras...");
+        System.out.println("=".repeat(50));
         Thread.sleep(500);
         this.adm_rel_soc();
       });
-      adm_rel_soc.addOption("[WIP] Traer Socios.", true, "No implementado.", (op) -> {
+      adm_rel_soc.addOption("Traer Socios.", (op) -> {
+        System.out.println("=".repeat(50));
+        System.out.println("Lista de socios:\n");
+        JSONparser.print(club.toHashMap().get("lstSocios"), 0);
+        System.out.println("\nVolviendo atras...");
+        System.out.println("=".repeat(50));
+        Thread.sleep(2500);
+        this.adm_rel_soc();
       });
-      adm_rel_soc.addOption("[WIP] Dar de baja Socio.", true, "No implementado.", (op) -> {
+      adm_rel_soc.addOption("Dar de baja Socio.", (op) -> {
+        System.out.println("=".repeat(50));
+        String dni = Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos y no estar repetido.",
+            (str) -> str.length() == 8);
+        Socio socio = club.traerSocio(Integer.parseInt(dni));
+        if (socio == null)
+          System.out.println("\nNo existe un socio con ese DNI!");
+        else {
+          try {
+            System.out.println("\nIntentando eliminar socio...");
+            club.eliminarSocio(socio.getIdCarnetSocio());
+            Files.write("data", club.toHashMap());
+          } catch (Exception e) {
+            System.out.println("Este error no debería suceder... " + e.getMessage());
+          } finally {
+            Thread.sleep(500);
+            System.out.println("\nSocio eliminado correctamente.");
+          }
+        }
+        System.out.println("\nVolviendo atras...");
+        System.out.println("=".repeat(50));
+        Thread.sleep(2500);
+        this.adm_rel_soc();
       });
       adm_rel_soc.addOption("Volver atras.", (op) -> {
         this.administracion();
@@ -134,6 +167,7 @@ public class MenuOptions {
     Map<String, Object> socio = new HashMap<String, Object>();
     if (inscribirSocio.getOptions().isEmpty()) {
       Option pri = inscribirSocio.addOption("Inscribir socio.", true, "Debe completar los datos primero.", (op) -> {
+        System.out.println("=".repeat(50));
         try {
           System.out.println("Inscribiendo al socio...");
           Thread.sleep(500);
@@ -150,12 +184,14 @@ public class MenuOptions {
         }
         Thread.sleep(500);
         System.out.println("Volviendo atras...");
+        System.out.println("=".repeat(50));
 
         Thread.sleep(500);
         op.setBlocked(true);
         back.exec();
       });
       inscribirSocio.addOption("Datos del socio.", (op) -> {
+        System.out.println("=".repeat(50));
         System.out.println(
             "Por favor ingrese los datos del socio, tenga en cuenta que luego para anotarlo a una actividad necesitara el dni.\n\n");
         String nombre = Files.scan("Nombre? > ", String.class);
@@ -169,6 +205,7 @@ public class MenuOptions {
         socio.put("dni", Integer.parseInt(dni));
         socio.put("edad", Integer.parseInt(edad));
         pri.setBlocked(false);
+        System.out.println("=".repeat(50));
         this.inscribirSocio(back);
       });
       inscribirSocio.addOption("Volver atras.", (op) -> {

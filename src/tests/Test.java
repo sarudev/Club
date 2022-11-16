@@ -27,6 +27,7 @@ public class Test {
       Map<String, Object> map = null;
       try {
         map = JSONparser.stringToHashMap(json);
+        // JSONparser.print(map, 0);
       } catch (Exception e) {
         throw new Exception("Corrupted data.");
       }
