@@ -692,7 +692,7 @@ public class MenuOptions {
         try {
           boolean error = false;
           if ((type.equalsIgnoreCase("profesor") && act.traerProfesor(((Profesor) per).getIdCarnetProfesor()) == null)
-              || (type.equalsIgnoreCase("socio") && act.traerProfesor(((Socio) per).getIdCarnetSocio()) == null)) {
+              || (type.equalsIgnoreCase("socio") && act.traerSocio(((Socio) per).getIdCarnetSocio()) == null)) {
             error = true;
             System.out.println("No existe ese " + type + " es esa actividad.");
           } else if (type.equalsIgnoreCase("profesor")) {
