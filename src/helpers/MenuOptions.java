@@ -83,6 +83,12 @@ public class MenuOptions {
     Menu main_rel_soc = this.menus.get("main_rel_soc");
     if (main_rel_soc.getOptions().isEmpty()) {
       main_rel_soc.addOption("Inscribir Socio.", (op) -> this.inscribir(() -> this.main_rel_soc(), "socio", true));
+      main_rel_soc.addOption("Agregar socio a una actividad.",
+          (op) -> this.add_soc_prof_act(() -> this.main_rel_soc(), "socio"));
+      main_rel_soc.addOption("Actividades en las que este un socio.",
+          (op) -> this.soc_prof_in_act(() -> this.main_rel_soc(), "socio"));
+      main_rel_soc.addOption("Eliminar socio de una actividad",
+          (op) -> this.del_soc_prof_act(() -> this.main_rel_soc(), "socio"));
       main_rel_soc.addOption("Dar de baja Socio.", (op) -> this.baja(() -> this.main_rel_soc(), "socio"));
       main_rel_soc.addOption("Volver atras.", (op) -> this.main());
     }
@@ -97,6 +103,8 @@ public class MenuOptions {
       main_rel_prof.addOption("Traer Profesor.", (op) -> this.show_soc_prof(() -> this.main_rel_prof(), "profesor"));
       main_rel_prof.addOption("Traer Profesores.",
           (op) -> this.show_socs_profs(() -> this.main_rel_prof(), "profesor"));
+      main_rel_prof.addOption("Actividades en las que este un profesor.",
+          (op) -> this.soc_prof_in_act(() -> this.main_rel_prof(), "profesor"));
       main_rel_prof.addOption("Volver atras.", (op) -> this.main());
     }
     main_rel_prof.printTitle(0);
@@ -183,8 +191,12 @@ public class MenuOptions {
       adm_rel_soc.addOption("Inscribir Socio.", (op) -> this.inscribir(() -> this.adm_rel_soc(), "socio", true));
       adm_rel_soc.addOption("Traer Socio.", (op) -> this.show_soc_prof(() -> this.adm_rel_soc(), "socio"));
       adm_rel_soc.addOption("Traer Socios.", (op) -> this.show_socs_profs(() -> this.adm_rel_soc(), "socio"));
-      // añadir socio a actividad
-      // traer actividades en la que este el socio
+      adm_rel_soc.addOption("Agregar socio a una actividad.",
+          (op) -> this.add_soc_prof_act(() -> this.adm_rel_soc(), "socio"));
+      adm_rel_soc.addOption("Actividades en las que este un socio.",
+          (op) -> this.soc_prof_in_act(() -> this.adm_rel_soc(), "socio"));
+      adm_rel_soc.addOption("Eliminar socio de una actividad",
+          (op) -> this.del_soc_prof_act(() -> this.adm_rel_soc(), "socio"));
       adm_rel_soc.addOption("Dar de baja Socio.", (op) -> this.baja(() -> this.adm_rel_soc(), "socio"));
       adm_rel_soc.addOption("Volver atras.", (op) -> this.administracion());
     }
@@ -200,8 +212,12 @@ public class MenuOptions {
           (op) -> this.inscribir(() -> this.adm_rel_prof(), "profesor", true));
       adm_rel_prof.addOption("Traer Profesor.", (op) -> this.show_soc_prof(() -> this.adm_rel_prof(), "profesor"));
       adm_rel_prof.addOption("Traer Profesores.", (op) -> this.show_socs_profs(() -> this.adm_rel_prof(), "profesor"));
-      // añadir profesor a actividad
-      // traer actividades en la que este el profesor
+      adm_rel_prof.addOption("Agregar profesor a una actividad.",
+          (op) -> this.add_soc_prof_act(() -> this.adm_rel_prof(), "profesor"));
+      adm_rel_prof.addOption("Actividades en las que este un profesor.",
+          (op) -> this.soc_prof_in_act(() -> this.adm_rel_prof(), "profesor"));
+      adm_rel_prof.addOption("Eliminar profesor de una actividad",
+          (op) -> this.del_soc_prof_act(() -> this.adm_rel_prof(), "profesor"));
       adm_rel_prof.addOption("Dar de baja Profesor.", (op) -> this.baja(() -> this.adm_rel_prof(), "profesor"));
       adm_rel_prof.addOption("Volver atras.", (op) -> this.administracion());
     }
@@ -675,13 +691,14 @@ public class MenuOptions {
       } else {
         try {
           boolean error = false;
-          if ((type.equalsIgnoreCase("profesor") && act.traerProfesor(((Profesor) per).getIdCarnetProfesor()) == null) || (type.equalsIgnoreCase("socio") && act.traerProfesor(((Socio) per).getIdCarnetSocio()) == null)) {
-        	error = true;
-        	System.out.println("No existe ese " + type + " es esa actividad.");
+          if ((type.equalsIgnoreCase("profesor") && act.traerProfesor(((Profesor) per).getIdCarnetProfesor()) == null)
+              || (type.equalsIgnoreCase("socio") && act.traerProfesor(((Socio) per).getIdCarnetSocio()) == null)) {
+            error = true;
+            System.out.println("No existe ese " + type + " es esa actividad.");
           } else if (type.equalsIgnoreCase("profesor")) {
-        	act.eliminarProfesor(((Profesor) per).getIdCarnetProfesor());
+            act.eliminarProfesor(((Profesor) per).getIdCarnetProfesor());
           } else if (type.equalsIgnoreCase("socio")) {
-        	act.eliminarSocio(((Socio) per).getIdCarnetSocio());
+            act.eliminarSocio(((Socio) per).getIdCarnetSocio());
           }
           if (!error) {
             System.out.println("\n" + type + " eliminado exitosamente.");
