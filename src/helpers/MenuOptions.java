@@ -82,8 +82,8 @@ public class MenuOptions {
   private void main_rel_soc() throws Exception {
     Menu main_rel_soc = this.menus.get("main_rel_soc");
     if (main_rel_soc.getOptions().isEmpty()) {
-      main_rel_soc.addOption("Inscribir Socio.", (op) -> this.inscribir(() -> this.adm_rel_soc(), "socio", true));
-      main_rel_soc.addOption("Dar de baja Socio.", (op) -> this.baja(() -> this.adm_rel_soc(), "socio"));
+      main_rel_soc.addOption("Inscribir Socio.", (op) -> this.inscribir(() -> this.main_rel_soc(), "socio", true));
+      main_rel_soc.addOption("Dar de baja Socio.", (op) -> this.baja(() -> this.main_rel_soc(), "socio"));
       main_rel_soc.addOption("Volver atras.", (op) -> this.main());
     }
     main_rel_soc.printTitle(0);
@@ -277,8 +277,6 @@ public class MenuOptions {
           String text = JSONparser.print(((Persona) obj.get("persona")).toHashMap(), 0);
           inscribir.setDescription(text.substring(0, text.length() - 1));
           pri.setBlocked(false);
-          String text2 = JSONparser.print(inscribir.toHashMap(), 0);
-          System.out.println(text2.substring(0, text2.length() - 1));
         }
         Thread.sleep(750);
         System.out.println("\nVolviendo atras...");
@@ -676,19 +674,25 @@ public class MenuOptions {
         System.out.println("\nNo existe una actividad con esa ID!");
       } else {
         try {
-          if (type.equalsIgnoreCase("profesor")) {
-            act.eliminarProfesor(((Profesor) per).getIdCarnetProfesor());
+          boolean error = false;
+          if ((type.equalsIgnoreCase("profesor") && act.traerProfesor(((Profesor) per).getIdCarnetProfesor()) == null) || (type.equalsIgnoreCase("socio") && act.traerProfesor(((Socio) per).getIdCarnetSocio()) == null)) {
+        	error = true;
+        	System.out.println("No existe ese " + type + " es esa actividad.");
+          } else if (type.equalsIgnoreCase("profesor")) {
+        	act.eliminarProfesor(((Profesor) per).getIdCarnetProfesor());
           } else if (type.equalsIgnoreCase("socio")) {
-            act.eliminarSocio(((Socio) per).getIdCarnetSocio());
+        	act.eliminarSocio(((Socio) per).getIdCarnetSocio());
           }
-          System.out.println("\n" + type + " eliminado exitosamente.");
-          Files.write("data", club.toHashMap());
+          if (!error) {
+            System.out.println("\n" + type + " eliminado exitosamente.");
+            Files.write("data", club.toHashMap());
+            String text = JSONparser.print(act.toHashMap(), 0);
+            System.out.println(text.substring(0, text.length() - 1));
+          }
         } catch (Exception e) {
           e.printStackTrace();
           System.out.println("Este error no deberia suceder... " + e.getMessage());
         }
-        String text = JSONparser.print(act.toHashMap(), 0);
-        System.out.println(text.substring(0, text.length() - 1));
       }
     }
     Thread.sleep(750);

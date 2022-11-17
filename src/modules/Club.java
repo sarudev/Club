@@ -69,7 +69,9 @@ public class Club {
     if (repe != null)
       throw new Exception("Ya existe un socio con ese dni.");
 
-    int id = this.lstProfesores.size();
+    int id = this.lstProfesores.isEmpty()
+    	? 0
+    	: this.lstProfesores.get(this.lstProfesores.size() - 1).getIdCarnetProfesor() + 1;
 
     Profesor prof = new Profesor(nombre, apellido, dni, edad, id, sueldo);
 
@@ -170,7 +172,9 @@ public class Club {
     if (repe != null)
       throw new Exception("Ya existe un socio con ese dni.");
 
-    int id = this.lstSocios.size();
+    int id = this.lstSocios.isEmpty()
+    	? 0
+    	: this.lstSocios.get(this.lstSocios.size() - 1).getIdCarnetSocio() + 1;
 
     Socio soc = new Socio(nombre, apellido, dni, edad, id, cuota);
 
@@ -264,7 +268,9 @@ public class Club {
   }
 
   public Actividad agregarActividad(String nombre, int cupos) throws Exception {
-    int id = this.lstActividades.size();
+    int id = this.lstActividades.isEmpty()
+    	? 0
+    	: this.lstActividades.get(this.lstActividades.size() - 1).getIdActividad() + 1;
 
     Actividad act = new Actividad(id, nombre, cupos);
 
