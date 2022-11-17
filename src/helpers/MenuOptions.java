@@ -128,6 +128,8 @@ public class MenuOptions {
     if (main_rel_alq.getOptions().isEmpty()) {
       main_rel_alq.addOption("Traer alquiler.", (op) -> this.show_alq(() -> this.main_rel_alq()));
       main_rel_alq.addOption("Traer alquileres.", (op) -> this.show_alqs(() -> this.main_rel_alq()));
+      main_rel_alq.addOption("Traer alquileres sin alquilar.",
+          (op) -> this.show_alqs_sin_alquilar(() -> this.main_rel_alq()));
       main_rel_alq.addOption("Alquilar.", (op) -> this.alquilar(() -> this.main_rel_alq()));
       main_rel_alq.addOption("Volver atras.", op -> this.main());
     }
@@ -757,6 +759,8 @@ public class MenuOptions {
       });
       adm_rel_alq.addOption("Traer alquiler.", (op) -> this.show_alq(() -> this.adm_rel_alq()));
       adm_rel_alq.addOption("Traer alquileres.", (op) -> this.show_alqs(() -> this.adm_rel_alq()));
+      adm_rel_alq.addOption("Traer alquileres sin alquilar.",
+          (op) -> this.show_alqs_sin_alquilar(() -> this.adm_rel_alq()));
       adm_rel_alq.addOption("Alquilar.", (op) -> this.alquilar(() -> this.adm_rel_alq()));
       adm_rel_alq.addOption("Eliminar un alquiler.", (op) -> {
         System.out.println("=".repeat(50));
@@ -820,6 +824,28 @@ public class MenuOptions {
       System.out.println(text.substring(0, text.length() - 1));
     } else {
       System.out.println("No hay alquileres para mostrar.\n");
+    }
+    Thread.sleep(750);
+    System.out.println("\nVolviendo atras...");
+    System.out.println("=".repeat(50));
+    Thread.sleep(750);
+    back.exec();
+  }
+
+  private void show_alqs_sin_alquilar(Lambda back) throws Exception {
+    System.out.println("=".repeat(50));
+    List<Alquiler> alqs = new ArrayList<Alquiler>();
+    for (int i = 0; i < this.club.getLstAlquileres().size(); i++) {
+      if (!this.club.getLstAlquileres().get(i).isAlquilado()) {
+        alqs.add(this.club.getLstAlquileres().get(i));
+      }
+    }
+    String text = JSONparser.print(alqs.stream().map((alq) -> alq.toHashMap()).collect(Collectors.toList()), 0);
+    if (text.length() > 2) {
+      System.out.println("Lista de alquileres:\n");
+      System.out.println(text.substring(0, text.length() - 1));
+    } else {
+      System.out.println("No hay alquileres sin alquilar disponibles.\n");
     }
     Thread.sleep(750);
     System.out.println("\nVolviendo atras...");
