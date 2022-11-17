@@ -60,18 +60,11 @@ public class MenuOptions {
     String reason = "El fichero con los datos del Club estan corrompidos.\nPuede recrear el fichero con datos por defecto con la opcion \"Recrear Fichero con datos por defecto\" en \"Administracion\".";
     if (main.getOptions().isEmpty()) {
       boolean blocked = this.club.getNombre().equalsIgnoreCase("error");
-      LambdaOne l = (op) -> {
-        System.out.println("no implementado xd");
-        Thread.sleep(500);
-        System.out.println("Volviendo al menú principal...");
-        Thread.sleep(500);
-        this.main();
-      };
       main.addOption("Relacionado socios.", blocked, reason, (op) -> this.main_rel_soc());
       main.addOption("Relacionado Profesores.", blocked, reason, (op) -> this.main_rel_prof());
       main.addOption("Relacionado Actividades.", blocked, reason, (op) -> this.main_rel_act());
-      main.addOption("[WIP] Relacionado Alquileres.", blocked, reason, l);
-      main.addOption("[mid] Administracion", (op) -> this.administracion());
+      main.addOption("Relacionado Alquileres.", blocked, reason, (op) -> this.main_rel_alq());
+      main.addOption("Administracion", (op) -> this.administracion());
       main.addOption("Salir", (op) -> System.out.println("Gracias por usar nuestro programa :)"));
     }
     main.printTitle(this.club.getNombre().equalsIgnoreCase("error") ? 3 : 0);
@@ -133,9 +126,10 @@ public class MenuOptions {
   private void main_rel_alq() throws Exception {
     Menu main_rel_alq = this.menus.get("main_rel_alq");
     if (main_rel_alq.getOptions().isEmpty()) {
-      // traer alquiler
-      // traer alquileres
-      // alquilar
+      main_rel_alq.addOption("Traer alquiler.", (op) -> this.show_alq(() -> this.main_rel_alq()));
+      main_rel_alq.addOption("Traer alquileres.", (op) -> this.show_alqs(() -> this.main_rel_alq()));
+      main_rel_alq.addOption("Alquilar.", (op) -> this.alquilar(() -> this.main_rel_alq()));
+      main_rel_alq.addOption("Volver atras.", op -> this.main());
     }
     main_rel_alq.printTitle(0);
     main_rel_alq.printOptions(2);
@@ -152,7 +146,7 @@ public class MenuOptions {
           (op) -> adm_rel_prof());
       administracion.addOption("Relacionado Actividades.", blocked, reason,
           (op) -> adm_rel_act());
-      administracion.addOption("[WIP] Relacionado Alquileres.", blocked, reason,
+      administracion.addOption("Relacionado Alquileres.", blocked, reason,
           (op) -> adm_rel_alq());
       administracion.addOption("Recrear Fichero con datos por defecto.", (op) -> {
         System.out.println("=".repeat(50));
@@ -722,15 +716,142 @@ public class MenuOptions {
   private void adm_rel_alq() throws Exception {
     Menu adm_rel_alq = this.menus.get("adm_rel_alq");
     if (adm_rel_alq.getOptions().isEmpty()) {
-      // añadir alquiler
-      // traer alquiler
-      // traer alquileres
-      // alquilar
-      // eliminar alquiler
+      adm_rel_alq.addOption("Agregar alquiler.", (op) -> {
+        System.out.println("=".repeat(50));
+        String nombre = Files.scan("Nombre? > ", String.class);
+        int precio = Integer.parseInt(Files.scan("Precio? > ", Integer.TYPE, "El dato debe ser un numero mayor a 0.",
+            (str) -> Integer.parseInt(str) >= 0));
+        String dia = Files.scan("Dia? > ", String.class, "El dia debe ser uno de la semana, sin acentos.", (str) -> {
+          return (str.equalsIgnoreCase("lunes") ||
+              str.equalsIgnoreCase("martes") ||
+              str.equalsIgnoreCase("miercoles") ||
+              str.equalsIgnoreCase("jueves") ||
+              str.equalsIgnoreCase("viernes") ||
+              str.equalsIgnoreCase("sabado") ||
+              str.equalsIgnoreCase("domingo"));
+        });
+        int hora = Integer.parseInt(Files.scan("Hora? > ", Integer.TYPE,
+            "La hora debe ser un numero entre 0 y 23 (contempla extremos).",
+            (str) -> Integer.parseInt(str) >= 0 || Integer.parseInt(str) <= 23));
+        int duracion = Integer.parseInt(Files.scan("Duracion? > ", Integer.TYPE,
+            "La duracion no puede mayor a 4.",
+            (str) -> Integer.parseInt(str) <= 4));
+        try {
+          Alquiler alq = this.club.agregarAlquiler(nombre, precio);
+          this.club.agregarDiaYhorario(alq, dia, hora, duracion);
+          System.out.println(JSONparser.print(alq.toHashMap(), 0));
+          System.out.println("Alquiler creado exitosamente..");
+        } catch (Exception e) {
+          if (e.getMessage().equalsIgnoreCase("Invalid dia y hora")) {
+            System.out.println("\nEl dia y horario se esta superponiendo con otro alquiler.");
+          } else {
+            e.printStackTrace();
+            System.out.println("Este error no deberia suceder... " + e.getMessage());
+          }
+        }
+        Thread.sleep(750);
+        System.out.println("\nVolviendo atras...");
+        System.out.println("=".repeat(50));
+        Thread.sleep(750);
+        this.adm_rel_alq();
+      });
+      adm_rel_alq.addOption("Traer alquiler.", (op) -> this.show_alq(() -> this.adm_rel_alq()));
+      adm_rel_alq.addOption("Traer alquileres.", (op) -> this.show_alqs(() -> this.adm_rel_alq()));
+      adm_rel_alq.addOption("Alquilar.", (op) -> this.alquilar(() -> this.adm_rel_alq()));
+      adm_rel_alq.addOption("Eliminar un alquiler.", (op) -> {
+        System.out.println("=".repeat(50));
+        int id = Integer.parseInt(
+            Files.scan("ID alquiler? > ", Integer.TYPE, "La ID debe ser un numero mayor a 0.",
+                (str) -> Integer.parseInt(str) >= 0));
+        System.out.println("\n\nBuscando alquiler...");
+        Thread.sleep(500);
+        Alquiler alq = this.club.traerAlquiler(id);
+        if (alq == null) {
+          System.out.println("\nNo existe un alquiler con esa ID!");
+        } else {
+          try {
+            this.club.eliminarAlquiler(id);
+            System.out.println("Alquiler eliminado exitosamente.");
+            Files.write("data", club.toHashMap());
+          } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Este error no deberia suceder... " + e.getMessage());
+          }
+        }
+        Thread.sleep(750);
+        System.out.println("\nVolviendo atras...");
+        System.out.println("=".repeat(50));
+        Thread.sleep(750);
+        this.adm_rel_alq();
+      });
+      adm_rel_alq.addOption("Volver atras.", op -> this.administracion());
     }
     adm_rel_alq.printTitle(0);
     adm_rel_alq.printOptions(2);
     adm_rel_alq.selectOption(1);
+  }
+
+  private void show_alq(Lambda back) throws Exception {
+    System.out.println("=".repeat(50));
+    int id = Integer.parseInt(
+        Files.scan("ID alquiler? > ", Integer.TYPE, "La ID debe ser un numero mayor a 0.",
+            (str) -> Integer.parseInt(str) >= 0));
+    System.out.println("\n\nBuscando alquiler...");
+    Thread.sleep(500);
+    Alquiler alq = this.club.traerAlquiler(id);
+    if (alq == null) {
+      System.out.println("\nNo existe un alquiler con esa ID!");
+    } else {
+      String text = JSONparser.print(alq.toHashMap(), 0);
+      System.out.println("\n" + text.substring(0, text.length() - 1));
+    }
+    Thread.sleep(750);
+    System.out.println("\nVolviendo atras...");
+    System.out.println("=".repeat(50));
+    Thread.sleep(750);
+    back.exec();
+  }
+
+  private void show_alqs(Lambda back) throws Exception {
+    System.out.println("=".repeat(50));
+    String text = JSONparser.print(this.club.toHashMap().get("lstAlquileres"), 0);
+    if (text.length() > 2) {
+      System.out.println("Lista de alquileres:\n");
+      System.out.println(text.substring(0, text.length() - 1));
+    } else {
+      System.out.println("No hay alquileres para mostrar.\n");
+    }
+    Thread.sleep(750);
+    System.out.println("\nVolviendo atras...");
+    System.out.println("=".repeat(50));
+    Thread.sleep(750);
+    back.exec();
+  }
+
+  private void alquilar(Lambda back) throws Exception {
+    System.out.println("=".repeat(50));
+    int id = Integer.parseInt(
+        Files.scan("ID alquiler? > ", Integer.TYPE, "La ID debe ser un numero mayor a 0.",
+            (str) -> Integer.parseInt(str) >= 0));
+    Alquiler alq = this.club.traerAlquiler(id);
+    if (alq == null) {
+      System.out.println("\nNo existe un alquiler con esa ID!");
+    } else {
+      if (alq.isAlquilado()) {
+        System.out.println("Ese alquiler ya fue alquilado.");
+      } else {
+        alq.setAlquilado(true);
+        String text = JSONparser.print(alq.toHashMap(), 0);
+        System.out.println("\n" + text.substring(0, text.length() - 1));
+        Files.write("data", club.toHashMap());
+        System.out.println("Alquiler alquilado satisfactoriamente.");
+      }
+    }
+    Thread.sleep(750);
+    System.out.println("\nVolviendo atras...");
+    System.out.println("=".repeat(50));
+    Thread.sleep(750);
+    back.exec();
   }
 
   private void recrearFicheroDefault() throws Exception {

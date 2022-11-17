@@ -70,8 +70,8 @@ public class Club {
       throw new Exception("Ya existe un socio con ese dni.");
 
     int id = this.lstProfesores.isEmpty()
-    	? 0
-    	: this.lstProfesores.get(this.lstProfesores.size() - 1).getIdCarnetProfesor() + 1;
+        ? 0
+        : this.lstProfesores.get(this.lstProfesores.size() - 1).getIdCarnetProfesor() + 1;
 
     Profesor prof = new Profesor(nombre, apellido, dni, edad, id, sueldo);
 
@@ -173,8 +173,8 @@ public class Club {
       throw new Exception("Ya existe un socio con ese dni.");
 
     int id = this.lstSocios.isEmpty()
-    	? 0
-    	: this.lstSocios.get(this.lstSocios.size() - 1).getIdCarnetSocio() + 1;
+        ? 0
+        : this.lstSocios.get(this.lstSocios.size() - 1).getIdCarnetSocio() + 1;
 
     Socio soc = new Socio(nombre, apellido, dni, edad, id, cuota);
 
@@ -269,8 +269,21 @@ public class Club {
 
   public Actividad agregarActividad(String nombre, int cupos) throws Exception {
     int id = this.lstActividades.isEmpty()
-    	? 0
-    	: this.lstActividades.get(this.lstActividades.size() - 1).getIdActividad() + 1;
+        ? 0
+        : this.lstActividades.get(this.lstActividades.size() - 1).getIdActividad() + 1;
+
+    Actividad act = new Actividad(id, nombre, cupos);
+
+    this.lstActividades.add(act);
+
+    return act;
+  }
+
+  public Actividad agregarActividad(int id, String nombre, int cupos) throws Exception {
+    Actividad act2 = this.traerActividad(id);
+
+    if (act2 != null)
+      throw new Exception("Ya existe una actividad con esa id.");
 
     Actividad act = new Actividad(id, nombre, cupos);
 
@@ -322,7 +335,7 @@ public class Club {
       if (!this.lstActividades.get(i).getDiasYhorarios().isEmpty()) {
         List<DiaHorario> actDyH = this.lstActividades.get(i).getDiasYhorarios();
         while (k < actDyH.size()) {
-          if (dYh.isBetween(actDyH.get(k))) {
+          if (dYh.isBetween(actDyH.get(k)) || actDyH.get(k).isBetween(dYh)) {
             throw new Exception("Invalid dia y hora");
           }
           k++;
@@ -337,13 +350,28 @@ public class Club {
   }
 
   public Alquiler agregarAlquiler(String nombre, double precio) throws Exception {
-    int id = this.lstAlquileres.size();
+    int id = this.lstAlquileres.isEmpty()
+        ? 0
+        : this.lstAlquileres.get(this.lstAlquileres.size() - 1).getIdAlquiler() + 1;
 
     Alquiler act = new Alquiler(nombre, id, precio);
 
     this.lstAlquileres.add(act);
 
     return act;
+  }
+
+  public Alquiler agregarAlquiler(int id, String nombre, double precio) throws Exception {
+    Alquiler alq2 = this.traerAlquiler(id);
+
+    if (alq2 != null)
+      throw new Exception("Ya existe un alquiler con esa id.");
+
+    Alquiler alq = new Alquiler(nombre, id, precio);
+
+    this.lstAlquileres.add(alq);
+
+    return alq;
   }
 
   public Alquiler traerAlquiler(int id) {
@@ -376,7 +404,8 @@ public class Club {
 
     while (i < this.lstAlquileres.size()) {
       if (this.lstAlquileres.get(i).getDiaYhorario() != null) {
-        if (dYh.isBetween(this.lstAlquileres.get(i).getDiaYhorario())) {
+        if (dYh.isBetween(this.lstAlquileres.get(i).getDiaYhorario())
+            || this.lstAlquileres.get(i).getDiaYhorario().isBetween(dYh)) {
           throw new Exception("Invalid dia y hora");
         }
       }
