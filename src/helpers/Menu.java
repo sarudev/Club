@@ -139,23 +139,14 @@ public class Menu {
     System.out.println("");
 
     while (optionValue == -1) {
-      System.out.print("Opcion? > ");
-      String option = Files.getSc().nextLine();
-      if (option.length() == 1) {
-        char cOption = option.charAt(0);
-        int value = 0;
-        if (Character.isDigit(cOption))
-          value = Integer.parseInt(Character.toString(cOption));
-        if (value >= this.start && value < this.options.size() + this.start) {
-          if (!this.options.get(value - this.start).isBlocked())
-            optionValue = value;
-          else
-            System.out.println("[BLOCKED OPTION] Reason: " + this.options.get(value - this.start).getReason() + "\n");
-        } else
-          System.out.println("[INVALID OPTION]");
-      } else {
-        System.out.println("[INVALID OPTION]");
-      }
+      int value = Integer.parseInt(Files.scan("Opcion? > ", Integer.TYPE,
+          "La opcion debe ser un numero mayor a " + (this.start - 1) + " y menor a "
+              + (this.options.size() + this.start) + ".",
+          (str) -> Integer.parseInt(str) >= this.start && Integer.parseInt(str) < this.options.size() + this.start));
+      if (!this.options.get(value - this.start).isBlocked())
+        optionValue = value;
+      else
+        System.out.println("[BLOCKED OPTION] Reason: " + this.options.get(value - this.start).getReason() + "\n");
     }
 
     Option op = this.options.get(optionValue - this.start);

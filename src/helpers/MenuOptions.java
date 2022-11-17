@@ -1,7 +1,10 @@
 package helpers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import modules.Actividad;
 import modules.Alquiler;
@@ -18,7 +21,7 @@ public class MenuOptions {
     this.club = club;
     this.menus = new HashMap<String, Menu>();
 
-    Menu main = new Menu("Bienvenido al club " + club.getNombre() + ".");
+    Menu main = new Menu("Bienvenido al club " + this.club.getNombre() + ".");
     this.menus.put("main", main);
 
     Menu main_rel_soc = new Menu("Relacionado Socios.");
@@ -27,8 +30,11 @@ public class MenuOptions {
     Menu main_rel_prof = new Menu("Relacionado Profesores.");
     this.menus.put("main_rel_prof", main_rel_prof);
 
-    Menu inscribir = new Menu("Inscribir [type].");
-    this.menus.put("inscribir", inscribir);
+    Menu adm_rel_act = new Menu("Relacionado Actividades.");
+    this.menus.put("adm_rel_act", adm_rel_act);
+
+    Menu adm_rel_alq = new Menu("Relacionado Alquileres.");
+    this.menus.put("adm_rel_alq", adm_rel_alq);
 
     Menu administracion = new Menu("Administracion.");
     this.menus.put("administracion", administracion);
@@ -39,11 +45,14 @@ public class MenuOptions {
     Menu adm_rel_prof = new Menu("Relacionado Profesores.");
     this.menus.put("adm_rel_prof", adm_rel_prof);
 
-    Menu adm_rel_act = new Menu("Relacionado Actividades.");
-    this.menus.put("adm_rel_act", adm_rel_act);
+    Menu inscribir = new Menu("Inscribir [type].");
+    this.menus.put("inscribir", inscribir);
 
-    Menu adm_rel_alq = new Menu("Relacionado Alquileres.");
-    this.menus.put("adm_rel_alq", adm_rel_alq);
+    Menu main_rel_act = new Menu("Relacionado Actividades.");
+    this.menus.put("main_rel_act", main_rel_act);
+
+    Menu main_rel_alq = new Menu("Relacionado Alquileres.");
+    this.menus.put("main_rel_alq", main_rel_alq);
   }
 
   public void main() throws Exception {
@@ -60,9 +69,9 @@ public class MenuOptions {
       };
       main.addOption("Relacionado socios.", blocked, reason, (op) -> this.main_rel_soc());
       main.addOption("Relacionado Profesores.", blocked, reason, (op) -> this.main_rel_prof());
-      main.addOption("[WIP] Relacionado Actividades.", blocked, reason, l);
+      main.addOption("Relacionado Actividades.", blocked, reason, (op) -> this.main_rel_act());
       main.addOption("[WIP] Relacionado Alquileres.", blocked, reason, l);
-      main.addOption("[MID] Administracion", (op) -> this.administracion());
+      main.addOption("[mid] Administracion", (op) -> this.administracion());
       main.addOption("Salir", (op) -> System.out.println("Gracias por usar nuestro programa :)"));
     }
     main.printTitle(this.club.getNombre().equalsIgnoreCase("error") ? 3 : 0);
@@ -85,13 +94,44 @@ public class MenuOptions {
   private void main_rel_prof() throws Exception {
     Menu main_rel_prof = this.menus.get("main_rel_prof");
     if (main_rel_prof.getOptions().isEmpty()) {
-      main_rel_prof.addOption("Traer Profesor.", (op) -> this.traer(() -> this.main_rel_prof(), "profesor"));
-      main_rel_prof.addOption("Traer Profesores.", (op) -> this.traers(() -> this.main_rel_prof(), "profesor"));
+      main_rel_prof.addOption("Traer Profesor.", (op) -> this.show_soc_prof(() -> this.main_rel_prof(), "profesor"));
+      main_rel_prof.addOption("Traer Profesores.",
+          (op) -> this.show_socs_profs(() -> this.main_rel_prof(), "profesor"));
       main_rel_prof.addOption("Volver atras.", (op) -> this.main());
     }
     main_rel_prof.printTitle(0);
     main_rel_prof.printOptions(2);
     main_rel_prof.selectOption(1);
+  }
+
+  private void main_rel_act() throws Exception {
+    Menu main_rel_act = this.menus.get("main_rel_act");
+    if (main_rel_act.getOptions().isEmpty()) {
+      main_rel_act.addOption("Traer actividad.", (op) -> this.show_act(() -> this.main_rel_act()));
+      main_rel_act.addOption("Traer actividades.", (op) -> this.show_acts(() -> this.main_rel_act()));
+      main_rel_act.addOption("Agregar socio a una actividad.",
+          (op) -> this.add_soc_prof_act(() -> this.main_rel_act(), "socio"));
+      main_rel_act.addOption("Actividades en las que este un socio.",
+          (op) -> this.soc_prof_in_act(() -> this.main_rel_act(), "socio"));
+      main_rel_act.addOption("Actividades en las que este un profesor.",
+          (op) -> this.soc_prof_in_act(() -> this.main_rel_act(), "profesor"));
+      main_rel_act.addOption("Volver atras.", (op) -> this.main());
+    }
+    main_rel_act.printTitle(0);
+    main_rel_act.printOptions(2);
+    main_rel_act.selectOption(0);
+  }
+
+  private void main_rel_alq() throws Exception {
+    Menu main_rel_alq = this.menus.get("main_rel_alq");
+    if (main_rel_alq.getOptions().isEmpty()) {
+      // traer alquiler
+      // traer alquileres
+      // alquilar
+    }
+    main_rel_alq.printTitle(0);
+    main_rel_alq.printOptions(2);
+    main_rel_alq.selectOption(0);
   }
 
   private void administracion() throws Exception {
@@ -102,7 +142,7 @@ public class MenuOptions {
       administracion.addOption("Relacionado socios.", blocked, reason, (op) -> adm_rel_soc());
       administracion.addOption("Relacionado Profesores.", blocked, reason,
           (op) -> adm_rel_prof());
-      administracion.addOption("[WIP] Relacionado Actividades.", blocked, reason,
+      administracion.addOption("Relacionado Actividades.", blocked, reason,
           (op) -> adm_rel_act());
       administracion.addOption("[WIP] Relacionado Alquileres.", blocked, reason,
           (op) -> adm_rel_alq());
@@ -112,14 +152,12 @@ public class MenuOptions {
         Thread.sleep(500);
         try {
           recrearFichero();
+          System.out.println("\nFichero recreado.\nPor favor reinicie el programa.");
         } catch (Exception e) {
           System.out.println("Esto no deberia haber sucedido... " + e.getMessage());
-        } finally {
-          System.out.println("\nFichero recreado.\nPor favor reinicie el programa.");
         }
         System.out.println("=".repeat(50));
       });
-      // volver atras
       administracion.addOption("Volver atras.", (op) -> main());
     }
     administracion.printTitle(0);
@@ -131,8 +169,10 @@ public class MenuOptions {
     Menu adm_rel_soc = this.menus.get("adm_rel_soc");
     if (adm_rel_soc.getOptions().isEmpty()) {
       adm_rel_soc.addOption("Inscribir Socio.", (op) -> this.inscribir(() -> this.adm_rel_soc(), "socio", true));
-      adm_rel_soc.addOption("Traer Socio.", (op) -> this.traer(() -> this.adm_rel_soc(), "socio"));
-      adm_rel_soc.addOption("Traer Socios.", (op) -> this.traers(() -> this.adm_rel_soc(), "socio"));
+      adm_rel_soc.addOption("Traer Socio.", (op) -> this.show_soc_prof(() -> this.adm_rel_soc(), "socio"));
+      adm_rel_soc.addOption("Traer Socios.", (op) -> this.show_socs_profs(() -> this.adm_rel_soc(), "socio"));
+      // añadir socio a actividad
+      // traer actividades en la que este el socio
       adm_rel_soc.addOption("Dar de baja Socio.", (op) -> this.baja(() -> this.adm_rel_soc(), "socio"));
       adm_rel_soc.addOption("Volver atras.", (op) -> this.administracion());
     }
@@ -146,8 +186,10 @@ public class MenuOptions {
     if (adm_rel_prof.getOptions().isEmpty()) {
       adm_rel_prof.addOption("Inscribir Profesor.",
           (op) -> this.inscribir(() -> this.adm_rel_prof(), "profesor", true));
-      adm_rel_prof.addOption("Traer Profesor.", (op) -> this.traer(() -> this.adm_rel_prof(), "profesor"));
-      adm_rel_prof.addOption("Traer Profesores.", (op) -> this.traers(() -> this.adm_rel_prof(), "profesor"));
+      adm_rel_prof.addOption("Traer Profesor.", (op) -> this.show_soc_prof(() -> this.adm_rel_prof(), "profesor"));
+      adm_rel_prof.addOption("Traer Profesores.", (op) -> this.show_socs_profs(() -> this.adm_rel_prof(), "profesor"));
+      // añadir profesor a actividad
+      // traer actividades en la que este el profesor
       adm_rel_prof.addOption("Dar de baja Profesor.", (op) -> this.baja(() -> this.adm_rel_prof(), "profesor"));
       adm_rel_prof.addOption("Volver atras.", (op) -> this.administracion());
     }
@@ -170,20 +212,23 @@ public class MenuOptions {
               Thread.sleep(500);
               try {
                 if (type.equalsIgnoreCase("profesor")) {
-                  club.agregarProfesor((String) obj.get("nombre"), (String) obj.get("apellido"), (int) obj.get("dni"),
+                  this.club.agregarProfesor((String) obj.get("nombre"), (String) obj.get("apellido"),
+                      (int) obj.get("dni"),
                       (int) obj.get("edad"), 80_000);
                 } else if (type.equalsIgnoreCase("socio")) {
-                  club.agregarSocio((String) obj.get("nombre"), (String) obj.get("apellido"), (int) obj.get("dni"),
+                  this.club.agregarSocio((String) obj.get("nombre"), (String) obj.get("apellido"), (int) obj.get("dni"),
                       (int) obj.get("edad"), 2_000);
                 } else {
                   throw new Exception("INVALID!!!!");
                 }
                 System.out.println("Inscripcion exitosa!");
               } catch (Exception e) {
-                System.out.println("ERROR: " + e.getMessage());
+                e.printStackTrace();
+                System.out.println("Este error no deberia suceder... " + e.getMessage());
               }
-              Files.write("data", club.toHashMap());
+              Files.write("data", this.club.toHashMap());
             } catch (Exception e) {
+              e.printStackTrace();
               System.out.println("Este error no deberia suceder... " + e.getMessage());
             }
             Thread.sleep(500);
@@ -204,19 +249,29 @@ public class MenuOptions {
         System.out.println(explain);
         String nombre = Files.scan("Nombre? > ", String.class);
         String apellido = Files.scan("Apellido? > ", String.class);
-        String dni = Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos y no estar repetido.",
-            (str) -> club.traerSocio(Integer.parseInt(str)) == null && str.length() == 8);
-        String edad = Files.scan("Edad? > ", Integer.TYPE, "El dato debe ser un numero mayor a 0.",
-            (str) -> Integer.parseInt(str) > 0);
-        obj.put("nombre", nombre);
-        obj.put("apellido", apellido);
-        obj.put("dni", Integer.parseInt(dni));
-        obj.put("edad", Integer.parseInt(edad));
-        obj.put("persona", new Persona(nombre, apellido, Integer.parseInt(dni), Integer.parseInt(edad)));
-        inscribir.setDescription(JSONparser.print(((Persona) obj.get("persona")).toHashMap(), 0));
-        pri.setBlocked(false);
-        System.out.println(JSONparser.print(inscribir.toHashMap(), 0));
+        String dni = Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos.",
+            (str) -> str.length() == 8);
+        if ((type.equalsIgnoreCase("profesor") && this.club.traerProfesor(Integer.parseInt(dni)) != null)
+            || (type.equalsIgnoreCase("socio") && this.club.traerSocio(Integer.parseInt(dni)) != null)) {
+          System.out.println("Ya existe un " + type + " con ese dni.");
+        } else {
+          String edad = Files.scan("Edad? > ", Integer.TYPE, "El dato debe ser un numero mayor a 0.",
+              (str) -> Integer.parseInt(str) > 0);
+          obj.put("nombre", nombre);
+          obj.put("apellido", apellido);
+          obj.put("dni", Integer.parseInt(dni));
+          obj.put("edad", Integer.parseInt(edad));
+          obj.put("persona", new Persona(nombre, apellido, Integer.parseInt(dni), Integer.parseInt(edad)));
+          String text = JSONparser.print(((Persona) obj.get("persona")).toHashMap(), 0);
+          inscribir.setDescription(text.substring(0, text.length() - 1));
+          pri.setBlocked(false);
+          String text2 = JSONparser.print(inscribir.toHashMap(), 0);
+          System.out.println(text2.substring(0, text2.length() - 1));
+        }
+        Thread.sleep(750);
+        System.out.println("\nVolviendo atras...");
         System.out.println("=".repeat(50));
+        Thread.sleep(750);
         this.inscribir(back, type, false);
       });
       inscribir.addOption("Volver atras.", (op) -> {
@@ -232,17 +287,17 @@ public class MenuOptions {
     inscribir.selectOption(1);
   }
 
-  private void traer(Lambda back, String type) throws Exception {
+  private void show_soc_prof(Lambda back, String type) throws Exception {
     System.out.println("=".repeat(50));
-    String dni = Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos y no estar repetido.",
+    String dni = Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos.",
         (str) -> str.length() == 8);
     System.out.println("\n\nBuscando " + type + "...");
     Thread.sleep(500);
     Persona soc = null;
     if (type.equalsIgnoreCase("profesor")) {
-      soc = club.traerProfesor(Integer.parseInt(dni));
+      soc = this.club.traerProfesor(Integer.parseInt(dni));
     } else if (type.equalsIgnoreCase("socio")) {
-      soc = club.traerSocio(Integer.parseInt(dni));
+      soc = this.club.traerSocio(Integer.parseInt(dni));
     } else {
       throw new Exception("INVALID!!!!");
     }
@@ -251,7 +306,8 @@ public class MenuOptions {
       System.out.println("No existe un " + type + " con ese DNI!");
       Thread.sleep(500);
     } else {
-      System.out.println(JSONparser.print(soc.toHashMap(), 0));
+      String text = JSONparser.print(soc.toHashMap(), 0);
+      System.out.println(text.substring(0, text.length() - 1));
       Thread.sleep(1500);
     }
     System.out.println("Volviendo atras...");
@@ -260,13 +316,23 @@ public class MenuOptions {
     back.exec();
   }
 
-  private void traers(Lambda back, String type) throws Exception {
+  private void show_socs_profs(Lambda back, String type) throws Exception {
     System.out.println("=".repeat(50));
     System.out.println("Lista de " + type + (type.equalsIgnoreCase("socio") ? "s" : "es") + ":\n");
     if (type.equalsIgnoreCase("profesor")) {
-      System.out.println(JSONparser.print(club.toHashMap().get("lstProfesores"), 0));
+      String text = JSONparser.print(this.club.toHashMap().get("lstProfesores"), 0);
+      if (this.club.getLstProfesores().isEmpty()) {
+        System.out.println("No hay profesores para mostrar...");
+      } else {
+        System.out.println(text.substring(0, text.length() - 1));
+      }
     } else if (type.equalsIgnoreCase("socio")) {
-      System.out.println(JSONparser.print(club.toHashMap().get("lstSocios"), 0));
+      String text = JSONparser.print(this.club.toHashMap().get("lstSocios"), 0);
+      if (this.club.getLstSocios().isEmpty()) {
+        System.out.println("No hay socios para mostrar...");
+      } else {
+        System.out.println(text.substring(0, text.length() - 1));
+      }
     } else {
       throw new Exception("INVALID!!!!");
     }
@@ -278,40 +344,40 @@ public class MenuOptions {
 
   private void baja(Lambda back, String type) throws Exception {
     System.out.println("=".repeat(50));
-    String dni = Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos y no estar repetido.",
+    String dni = Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos.",
         (str) -> str.length() == 8);
     if (type.equalsIgnoreCase("profesor")) {
-      Profesor prof = club.traerProfesor(Integer.parseInt(dni));
+      Profesor prof = this.club.traerProfesor(Integer.parseInt(dni));
       if (prof == null)
         System.out.println("\nNo existe un " + type + " con ese DNI!");
       else {
         try {
           System.out.println("\nIntentando eliminar " + type + "...");
-          club.eliminarProfesor(prof.getIdCarnetProfesor());
-          Files.write("data", club.toHashMap());
-        } catch (Exception e) {
-          System.out.println("Este error no debería suceder... " + e.getMessage());
-        } finally {
+          this.club.eliminarProfesor(prof.getIdCarnetProfesor());
           Thread.sleep(500);
           System.out
               .println("\n" + type.replace(String.valueOf(type.charAt(0)), String.valueOf(type.charAt(0)).toUpperCase())
                   + " eliminado correctamente.");
+          Files.write("data", this.club.toHashMap());
+        } catch (Exception e) {
+          e.printStackTrace();
+          System.out.println("Este error no debería suceder... " + e.getMessage());
         }
       }
     } else if (type.equalsIgnoreCase("socio")) {
-      Socio socio = club.traerSocio(Integer.parseInt(dni));
+      Socio socio = this.club.traerSocio(Integer.parseInt(dni));
       if (socio == null)
         System.out.println("\nNo existe un socio con ese DNI!");
       else {
         try {
-          System.out.println("\nIntentando eliminar socio...");
-          club.eliminarSocio(socio.getIdCarnetSocio());
-          Files.write("data", club.toHashMap());
-        } catch (Exception e) {
-          System.out.println("Este error no debería suceder... " + e.getMessage());
-        } finally {
+          System.out.println("\nIntentando eliminar " + type + "...");
+          this.club.eliminarSocio(socio.getIdCarnetSocio());
           Thread.sleep(500);
           System.out.println("\nSocio eliminado correctamente.");
+          Files.write("data", this.club.toHashMap());
+        } catch (Exception e) {
+          e.printStackTrace();
+          System.out.println("Este error no debería suceder... " + e.getMessage());
         }
       }
     } else {
@@ -320,14 +386,318 @@ public class MenuOptions {
     System.out.println("\nVolviendo atras...");
     System.out.println("=".repeat(50));
     Thread.sleep(2500);
+    back.exec();
   }
 
   private void adm_rel_act() throws Exception {
+    Menu adm_rel_act = this.menus.get("adm_rel_act");
+    if (adm_rel_act.getOptions().isEmpty()) {
+      adm_rel_act.addOption("Agregar actividad.", (op) -> {
+        System.out.println("=".repeat(50));
+        String nombre = Files.scan("Nombre? > ", String.class);
+        int cupos = Integer.parseInt(Files.scan("Cupos? > ", Integer.TYPE, "El dato debe ser un numero mayor a 0.",
+            (str) -> Integer.parseInt(str) > 0));
+        Actividad act = null;
+        try {
+          act = this.club.agregarActividad(nombre, cupos);
+          System.out.println(JSONparser.print(act.toHashMap(), 0));
+          System.out.println("Actividad creada exitosamente.");
+          Files.write("data", club.toHashMap());
+        } catch (Exception e) {
+          e.printStackTrace();
+          System.out.println("Este error no deberia suceder... " + e.getMessage());
+        }
+        Thread.sleep(750);
+        System.out.println("\nVolviendo atras...");
+        System.out.println("=".repeat(50));
+        Thread.sleep(750);
+        this.adm_rel_act();
+      });
+      adm_rel_act.addOption("Traer actividad.", (op) -> this.show_act(() -> this.adm_rel_act()));
+      adm_rel_act.addOption("Traer actividades.", (op) -> this.show_acts(() -> this.adm_rel_act()));
+      adm_rel_act.addOption("Agregar profesor a una actividad.",
+          (op) -> this.add_soc_prof_act(() -> this.adm_rel_act(), "profesor"));
+      adm_rel_act.addOption("Actividades en las que este un profesor.",
+          (op) -> this.soc_prof_in_act(() -> this.adm_rel_act(), "profesor"));
+      adm_rel_act.addOption("Eliminar profesor de una actividad",
+          (op) -> this.del_soc_prof_act(() -> this.adm_rel_act(), "profesor"));
+      adm_rel_act.addOption("Agregar socio a una actividad.",
+          (op) -> this.add_soc_prof_act(() -> this.adm_rel_act(), "socio"));
+      adm_rel_act.addOption("Actividades en las que este un socio.",
+          (op) -> this.soc_prof_in_act(() -> this.adm_rel_act(), "socio"));
+      adm_rel_act.addOption("Eliminar socio de una actividad",
+          (op) -> this.del_soc_prof_act(() -> this.adm_rel_act(), "socio"));
+      adm_rel_act.addOption("Agregar horario a una actividad.", (op) -> {
+        System.out.println("=".repeat(50));
+        int id = Integer.parseInt(
+            Files.scan("ID actividad? > ", Integer.TYPE, "La ID debe ser un numero mayor a 0.",
+                (str) -> Integer.parseInt(str) >= 0));
+        Thread.sleep(500);
+        Actividad act = this.club.traerActividad(id);
+        if (act == null) {
+          System.out.println("\nNo existe una actividad con esa ID!");
+        } else {
+          String dia = Files.scan("Dia? > ", String.class, "El dia debe ser uno de la semana, sin acentos.", (str) -> {
+            return (str.equalsIgnoreCase("lunes") ||
+                str.equalsIgnoreCase("martes") ||
+                str.equalsIgnoreCase("miercoles") ||
+                str.equalsIgnoreCase("jueves") ||
+                str.equalsIgnoreCase("viernes") ||
+                str.equalsIgnoreCase("sabado") ||
+                str.equalsIgnoreCase("domingo"));
+          });
+          int hora = Integer.parseInt(Files.scan("Hora? > ", Integer.TYPE,
+              "La hora debe ser un numero entre 0 y 23 (contempla extremos).",
+              (str) -> Integer.parseInt(str) >= 0 || Integer.parseInt(str) <= 23));
+          int duracion = Integer.parseInt(Files.scan("Duracion? > ", Integer.TYPE,
+              "La duracion no puede mayor a 4.",
+              (str) -> Integer.parseInt(str) <= 4));
+          try {
+            this.club.agregarDiaYhorario(act, dia, hora, duracion);
+            System.out.println(JSONparser.print(act.toHashMap(), 0));
+            System.out.println("Dia y horario agregado exitosamente.");
+          } catch (Exception e) {
+            if (e.getMessage().equalsIgnoreCase("Invalid dia y hora")) {
+              System.out.println("\nEl dia y horario se esta superponiendo con otra actividad.");
+            } else {
+              e.printStackTrace();
+              System.out.println("Este error no deberia suceder... " + e.getMessage());
+            }
+          }
+        }
+        Thread.sleep(750);
+        System.out.println("\nVolviendo atras...");
+        System.out.println("=".repeat(50));
+        Thread.sleep(750);
+        this.adm_rel_act();
+      });
+      adm_rel_act.addOption("Eliminar una actividad.", (op) -> {
+        System.out.println("=".repeat(50));
+        int id = Integer.parseInt(
+            Files.scan("ID actividad? > ", Integer.TYPE, "La ID debe ser un numero mayor a 0.",
+                (str) -> Integer.parseInt(str) >= 0));
+        System.out.println("\n\nBuscando actividad...");
+        Thread.sleep(500);
+        Actividad act = this.club.traerActividad(id);
+        if (act == null) {
+          System.out.println("\nNo existe una actividad con esa ID!");
+        } else {
+          try {
+            this.club.eliminarActividad(id);
+            System.out.println("Actividad eliminada exitosamente.");
+            Files.write("data", club.toHashMap());
+          } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Este error no deberia suceder... " + e.getMessage());
+          }
+        }
+        Thread.sleep(750);
+        System.out.println("\nVolviendo atras...");
+        System.out.println("=".repeat(50));
+        Thread.sleep(750);
+        this.adm_rel_act();
+      });
+      adm_rel_act.addOption("Volver atras", (op) -> this.administracion());
+    }
+    adm_rel_act.printTitle(0);
+    adm_rel_act.printOptions(2);
+    adm_rel_act.selectOption(0);
+  }
 
+  private void show_act(Lambda back) throws Exception {
+    System.out.println("=".repeat(50));
+    int id = Integer.parseInt(
+        Files.scan("ID actividad? > ", Integer.TYPE, "La ID debe ser un numero mayor a 0.",
+            (str) -> Integer.parseInt(str) >= 0));
+    System.out.println("\n\nBuscando actividad...");
+    Thread.sleep(500);
+    Actividad act = this.club.traerActividad(id);
+    if (act == null) {
+      System.out.println("\nNo existe una actividad con esa ID!");
+    } else {
+      String text = JSONparser.print(act.toHashMap(), 0);
+      System.out.println("\n" + text.substring(0, text.length() - 1));
+    }
+    Thread.sleep(750);
+    System.out.println("\nVolviendo atras...");
+    System.out.println("=".repeat(50));
+    Thread.sleep(750);
+    back.exec();
+  }
+
+  private void show_acts(Lambda back) throws Exception {
+    System.out.println("=".repeat(50));
+    String text = JSONparser.print(this.club.toHashMap().get("lstActividades"), 0);
+    if (text.length() > 2) {
+      System.out.println("Lista de actividades:\n");
+      System.out.println(text.substring(0, text.length() - 1));
+    } else {
+      System.out.println("No hay activiades para mostrar.\n");
+    }
+    Thread.sleep(750);
+    System.out.println("Volviendo atras...");
+    System.out.println("=".repeat(50));
+    Thread.sleep(750);
+    back.exec();
+  }
+
+  private void add_soc_prof_act(Lambda back, String type) throws Exception {
+    System.out.println("=".repeat(50));
+    int dni = Integer
+        .parseInt(Files.scan("DNI " + type + "? > ", Integer.TYPE,
+            "El dato debe ser un numero de 8 digitos",
+            (str) -> str.length() == 8));
+    Persona per = null;
+    if (type.equalsIgnoreCase("profesor")) {
+      per = this.club.traerProfesor(dni);
+    } else if (type.equalsIgnoreCase("socio")) {
+      per = this.club.traerSocio(dni);
+    }
+    if (per == null) {
+      System.out.println("No existe un " + type + " con ese DNI.");
+    } else {
+      int id = Integer.parseInt(
+          Files.scan("ID actividad? > ", Integer.TYPE, "La ID debe ser un numero mayor a 0.",
+              (str) -> Integer.parseInt(str) >= 0));
+      Thread.sleep(500);
+      Actividad act = this.club.traerActividad(id);
+      if (act == null) {
+        System.out.println("\nNo existe una actividad con esa ID!");
+      } else {
+        if ((type.equalsIgnoreCase("profesor") && act.traerProfesor(((Profesor) per).getIdCarnetProfesor()) != null)
+            || (type.equalsIgnoreCase("socio") && act.traerSocio(((Socio) per).getIdCarnetSocio()) != null)) {
+          System.out.println("Ya existe ese " + type + " en la actividad.");
+        } else {
+          if (type.equalsIgnoreCase("socio") && act.getLstSocios().size() == act.getCupos()) {
+            System.out
+                .println(
+                    "No se puede agregar al socio porque se alcanzo el numero de cupos maximos para esta actividad.");
+          } else {
+            try {
+              if (type.equalsIgnoreCase("profesor")) {
+                act.agregarProfesor((Profesor) per);
+              } else if (type.equalsIgnoreCase("socio")) {
+                act.agregarSocio((Socio) per);
+              }
+              System.out.println("\n" + type + " agregado exitosamente.");
+              Files.write("data", club.toHashMap());
+            } catch (Exception e) {
+              e.printStackTrace();
+              System.out.println("Este error no deberia suceder... " + e.getMessage());
+            }
+            String text = JSONparser.print(act.toHashMap(), 0);
+            System.out.println(text.substring(0, text.length() - 1));
+          }
+        }
+      }
+    }
+    Thread.sleep(750);
+    System.out.println("\nVolviendo atras...");
+    System.out.println("=".repeat(50));
+    Thread.sleep(750);
+    back.exec();
+  }
+
+  private void soc_prof_in_act(Lambda back, String type) throws Exception {
+    System.out.println("=".repeat(50));
+    int dni = Integer
+        .parseInt(Files.scan("DNI? > ", Integer.TYPE, "El dato debe ser un numero de 8 digitos.",
+            (str) -> str.length() == 8));
+    Persona per = null;
+    if (type.equalsIgnoreCase("profesor")) {
+      per = this.club.traerProfesor(dni);
+    } else if (type.equalsIgnoreCase("socio")) {
+      per = this.club.traerSocio(dni);
+    }
+    List<Actividad> lst = new ArrayList<Actividad>();
+    if (per == null) {
+      System.out.println("No existe un " + type + " con ese DNI.");
+    } else {
+      List<Actividad> acts = this.club.getLstActividades();
+
+      for (int i = 0; i < acts.size(); i++) {
+        if (type.equalsIgnoreCase("profesor")) {
+          for (int k = 0; k < acts.get(i).getLstProfesores().size(); k++) {
+            if (acts.get(i).getLstProfesores().get(k).getDni() == dni) {
+              lst.add(acts.get(i));
+            }
+          }
+        } else if (type.equalsIgnoreCase("socio")) {
+          for (int k = 0; k < acts.get(i).getLstSocios().size(); k++) {
+            if (acts.get(i).getLstSocios().get(k).getDni() == dni) {
+              lst.add(acts.get(i));
+            }
+          }
+        }
+      }
+    }
+    String text = JSONparser.print(lst.stream().map((p) -> p.toHashMap()).collect(Collectors.toList()), 0);
+    System.out.println(text.substring(0, text.length() - 1));
+    Thread.sleep(750);
+    System.out.println("\nVolviendo atras...");
+    System.out.println("=".repeat(50));
+    Thread.sleep(750);
+    back.exec();
+  }
+
+  private void del_soc_prof_act(Lambda back, String type) throws Exception {
+    System.out.println("=".repeat(50));
+    int dni = Integer
+        .parseInt(Files.scan("DNI " + type + "? > ", Integer.TYPE,
+            "El dato debe ser un numero de 8 digitos.",
+            (str) -> str.length() == 8));
+    Persona per = null;
+    if (type.equalsIgnoreCase("profesor")) {
+      per = this.club.traerProfesor(dni);
+    } else if (type.equalsIgnoreCase("socio")) {
+      per = this.club.traerSocio(dni);
+    }
+    if (per == null) {
+      System.out.println("No existe un " + type + " con ese DNI.");
+    } else {
+      int id = Integer.parseInt(
+          Files.scan("ID actividad? > ", Integer.TYPE, "La ID no puede ser menor a 0.",
+              (str) -> Integer.parseInt(str) >= 0));
+      Thread.sleep(500);
+      Actividad act = this.club.traerActividad(id);
+      if (act == null) {
+        System.out.println("\nNo existe una actividad con esa ID!");
+      } else {
+        try {
+          if (type.equalsIgnoreCase("profesor")) {
+            act.eliminarProfesor(((Profesor) per).getIdCarnetProfesor());
+          } else if (type.equalsIgnoreCase("socio")) {
+            act.eliminarSocio(((Socio) per).getIdCarnetSocio());
+          }
+          System.out.println("\n" + type + " eliminado exitosamente.");
+          Files.write("data", club.toHashMap());
+        } catch (Exception e) {
+          e.printStackTrace();
+          System.out.println("Este error no deberia suceder... " + e.getMessage());
+        }
+        String text = JSONparser.print(act.toHashMap(), 0);
+        System.out.println(text.substring(0, text.length() - 1));
+      }
+    }
+    Thread.sleep(750);
+    System.out.println("\nVolviendo atras...");
+    System.out.println("=".repeat(50));
+    Thread.sleep(750);
+    back.exec();
   }
 
   private void adm_rel_alq() throws Exception {
-
+    Menu adm_rel_alq = this.menus.get("adm_rel_alq");
+    if (adm_rel_alq.getOptions().isEmpty()) {
+      // añadir alquiler
+      // traer alquiler
+      // traer alquileres
+      // alquilar
+      // eliminar alquiler
+    }
+    adm_rel_alq.printTitle(0);
+    adm_rel_alq.printOptions(2);
+    adm_rel_alq.selectOption(1);
   }
 
   private void recrearFichero() throws Exception {
@@ -365,6 +735,7 @@ public class MenuOptions {
     club.agregarDiaYhorario(eventos, "sabado", 8, 2);
 
     Files.write("data", club.toHashMap());
-    System.out.println(JSONparser.print(club.toHashMap(), 0));
+    String text = JSONparser.print(club.toHashMap(), 0);
+    System.out.println(text.substring(0, text.length() - 1));
   }
 }

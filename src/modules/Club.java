@@ -138,7 +138,27 @@ public class Club {
     if (prof == null)
       throw new Exception("No existe ese profesor.");
 
-    this.lstProfesores.remove(id);
+    for (int i = 0; i < this.lstActividades.size(); i++) {
+      Actividad act = this.lstActividades.get(i);
+      for (int k = 0; k < act.getLstProfesores().size(); k++) {
+        Profesor p = act.getLstProfesores().get(k);
+        if (p.getIdCarnetProfesor() == id) {
+          act.eliminarProfesor(id);
+        }
+      }
+    }
+
+    int i = 0;
+    boolean found = false;
+
+    while (i < this.lstProfesores.size() && !found) {
+      if (this.lstProfesores.get(i).getIdCarnetProfesor() == id) {
+        found = true;
+      }
+      i++;
+    }
+
+    this.lstProfesores.remove(i - 1);
 
     return prof;
   }
@@ -228,7 +248,17 @@ public class Club {
       }
     }
 
-    this.lstSocios.remove(id);
+    int i = 0;
+    boolean found = false;
+
+    while (i < this.lstSocios.size() && !found) {
+      if (this.lstSocios.get(i).getIdCarnetSocio() == id) {
+        found = true;
+      }
+      i++;
+    }
+
+    this.lstSocios.remove(i - 1);
 
     return soc;
   }
@@ -262,7 +292,17 @@ public class Club {
     if (act == null)
       throw new Exception("Invalid id");
 
-    this.lstActividades.remove(id);
+    int i = 0;
+    boolean found = false;
+
+    while (i < this.lstActividades.size() && !found) {
+      if (this.lstActividades.get(i).getIdActividad() == id) {
+        found = true;
+      }
+      i++;
+    }
+
+    this.lstActividades.remove(i - 1);
 
     return act;
   }

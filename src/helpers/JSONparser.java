@@ -62,7 +62,7 @@ public class JSONparser {
         text[0] += "]\n";
     }
 
-    return text[0].substring(0, text[0].length() - 1);
+    return text[0];
   }
 
   @SuppressWarnings("unchecked")
