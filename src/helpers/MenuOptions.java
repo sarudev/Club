@@ -57,7 +57,7 @@ public class MenuOptions {
 
   public void main() throws Exception {
     Menu main = this.menus.get("main");
-    String reason = "El fichero con los datos del Club estan corrompidos.\nPuede recrear el fichero con datos por defecto con la opcion \"Recrear Fichero\" en \"Administracion\".";
+    String reason = "El fichero con los datos del Club estan corrompidos.\nPuede recrear el fichero con datos por defecto con la opcion \"Recrear Fichero con datos por defecto\" en \"Administracion\".";
     if (main.getOptions().isEmpty()) {
       boolean blocked = this.club.getNombre().equalsIgnoreCase("error");
       LambdaOne l = (op) -> {
@@ -136,7 +136,7 @@ public class MenuOptions {
 
   private void administracion() throws Exception {
     Menu administracion = this.menus.get("administracion");
-    String reason = "El fichero con los datos del Club estan corrompidos.\nPuede recrear el fichero con datos por defecto con la opcion \"Recrear Fichero\" en \"Administracion\".";
+    String reason = "El fichero con los datos del Club estan corrompidos.\nPuede recrear el fichero con datos por defecto con la opcion \"Recrear Fichero con datos por defecto\" en \"Administracion\".";
     if (administracion.getOptions().isEmpty()) {
       boolean blocked = this.club.getNombre().equalsIgnoreCase("error");
       administracion.addOption("Relacionado socios.", blocked, reason, (op) -> adm_rel_soc());
@@ -146,12 +146,24 @@ public class MenuOptions {
           (op) -> adm_rel_act());
       administracion.addOption("[WIP] Relacionado Alquileres.", blocked, reason,
           (op) -> adm_rel_alq());
-      administracion.addOption("Recrear Fichero.", (op) -> {
+      administracion.addOption("Recrear Fichero con datos por defecto.", (op) -> {
         System.out.println("=".repeat(50));
         System.out.println("Recreando fichero...");
         Thread.sleep(500);
         try {
-          recrearFichero();
+          recrearFicheroDefault();
+          System.out.println("\nFichero recreado.\nPor favor reinicie el programa.");
+        } catch (Exception e) {
+          System.out.println("Esto no deberia haber sucedido... " + e.getMessage());
+        }
+        System.out.println("=".repeat(50));
+      });
+      administracion.addOption("Recrear Fichero con datos vacios.", (op) -> {
+        System.out.println("=".repeat(50));
+        System.out.println("Recreando fichero...");
+        Thread.sleep(500);
+        try {
+          recrearFicheroVacio();
           System.out.println("\nFichero recreado.\nPor favor reinicie el programa.");
         } catch (Exception e) {
           System.out.println("Esto no deberia haber sucedido... " + e.getMessage());
@@ -700,7 +712,7 @@ public class MenuOptions {
     adm_rel_alq.selectOption(1);
   }
 
-  private void recrearFichero() throws Exception {
+  private void recrearFicheroDefault() throws Exception {
     Club club = new Club("Barrio feliz", "Victor Hugo 1200");
     Socio soc_gonza = club.agregarSocio("Gonzalo", "Vedia", 44394976, 20, 2_000);
     Socio soc_sergio = club.agregarSocio("Sergio", "Cadima", 41546475, 23, 2_000);
@@ -734,6 +746,13 @@ public class MenuOptions {
     Alquiler eventos = club.agregarAlquiler("Eventos", 70_000);
     club.agregarDiaYhorario(eventos, "sabado", 8, 2);
 
+    Files.write("data", club.toHashMap());
+    String text = JSONparser.print(club.toHashMap(), 0);
+    System.out.println(text.substring(0, text.length() - 1));
+  }
+
+  private void recrearFicheroVacio() throws Exception {
+    Club club = new Club("Barrio feliz", "Victor Hugo 1200");
     Files.write("data", club.toHashMap());
     String text = JSONparser.print(club.toHashMap(), 0);
     System.out.println(text.substring(0, text.length() - 1));

@@ -36,7 +36,7 @@ public class Test {
     } catch (Exception e) {
       System.out.println("ERROR: " + e.getMessage());
       System.out.println(
-          "Puede recrear el fichero con datos por defecto con la opcion \"Recrear Fichero\" en \"Administracion\".");
+          "Puede recrear el fichero con datos por defecto con la opcion \"Recrear Fichero con datos por defecto\" en \"Administracion\".");
     }
     if (club == null) {
       try {
