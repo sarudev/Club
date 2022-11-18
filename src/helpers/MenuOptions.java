@@ -470,7 +470,7 @@ public class MenuOptions {
           });
           int hora = Integer.parseInt(Files.scan("Hora? > ", Integer.TYPE,
               "La hora debe ser un numero entre 0 y 23 (contempla extremos).",
-              (str) -> Integer.parseInt(str) >= 0 || Integer.parseInt(str) <= 23));
+              (str) -> Integer.parseInt(str) >= 0 && Integer.parseInt(str) <= 23));
           int duracion = Integer.parseInt(Files.scan("Duracion? > ", Integer.TYPE,
               "La duracion no puede mayor a 4.",
               (str) -> Integer.parseInt(str) <= 4));
@@ -734,10 +734,10 @@ public class MenuOptions {
         });
         int hora = Integer.parseInt(Files.scan("Hora? > ", Integer.TYPE,
             "La hora debe ser un numero entre 0 y 23 (contempla extremos).",
-            (str) -> Integer.parseInt(str) >= 0 || Integer.parseInt(str) <= 23));
+            (str) -> Integer.parseInt(str) >= 0 && Integer.parseInt(str) <= 23));
         int duracion = Integer.parseInt(Files.scan("Duracion? > ", Integer.TYPE,
-            "La duracion no puede mayor a 4.",
-            (str) -> Integer.parseInt(str) <= 4));
+            "La duracion debe ser un numero entre 0 y 5.",
+            (str) -> Integer.parseInt(str) > 0 && Integer.parseInt(str) <= 4));
         try {
           Alquiler alq = this.club.agregarAlquiler(nombre, precio);
           this.club.agregarDiaYhorario(alq, dia, hora, duracion);
